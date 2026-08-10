@@ -33,6 +33,7 @@ public final class CinematicController {
         if (restoreSmartCull == null) restoreSmartCull = minecraft.smartCull;
         minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
         minecraft.smartCull = false;
+        minecraft.levelRenderer.needsUpdate();
         phase = ThreadLocalRandom.current().nextDouble(Math.PI * 2.0);
         current = null;
         chooseShot(minecraft);
@@ -52,6 +53,7 @@ public final class CinematicController {
             Minecraft.getInstance().smartCull = restoreSmartCull;
             restoreSmartCull = null;
         }
+        Minecraft.getInstance().levelRenderer.needsUpdate();
     }
 
     public void tick(Minecraft minecraft) {
