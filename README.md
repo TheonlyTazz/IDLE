@@ -20,3 +20,12 @@ Minecraft 26.1.2 requires Java 25. Run `./gradlew build` (or `gradlew.bat build`
 is produced under `build/libs`. The version-neutral state and easing code is isolated in `core` to support a later
 Java 21 / Minecraft 1.21.1 adapter.
 
+## CurseForge publishing
+
+Create the CurseForge project, copy `.env.example` to `.env`, and set the upload token, project ID, and project slug.
+The `.env` file is ignored. Each release also requires a matching file under `metadata/changelogs`.
+
+```powershell
+.\gradlew.bat publishCurseforge
+```
+
