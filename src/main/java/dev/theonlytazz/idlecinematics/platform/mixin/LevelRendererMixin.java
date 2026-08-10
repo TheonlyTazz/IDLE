@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LevelRenderer.class)
 abstract class LevelRendererMixin {
-    @Inject(method = "isSectionCompiledAndVisible", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "isSectionCompiled", at = @At("HEAD"), cancellable = true)
     private void idlecinematics$keepPlayerSectionVisible(BlockPos position,
                                                           CallbackInfoReturnable<Boolean> callback) {
         Minecraft minecraft = Minecraft.getInstance();

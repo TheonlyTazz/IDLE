@@ -6,6 +6,8 @@
 
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
 license="${mod_license}"
 
 # A URL to refer people to when problems occur with this mod
@@ -39,7 +41,7 @@ displayTest="IGNORE_SERVER_VERSION"
 #authors=""
 
 # The description text for the mod (multi line!) (#mandatory)
-description='''A clean-room NeoForge cinematic camera that activates after user inactivity.'''
+description='''A client-side cinematic camera that activates after user inactivity.'''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]

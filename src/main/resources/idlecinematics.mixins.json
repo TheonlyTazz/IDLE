@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.theonlytazz.idlecinematics.platform.mixin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_21",
   "client": ["CameraAccessor", "CameraMixin", "EntityRendererMixin", "LevelRendererMixin"],
   "injectors": {"defaultRequire": 1}
 }

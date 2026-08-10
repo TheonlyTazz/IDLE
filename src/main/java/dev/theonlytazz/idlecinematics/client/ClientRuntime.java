@@ -9,7 +9,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,8 +20,7 @@ import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = IdleCinematics.MOD_ID, value = Dist.CLIENT)
 public final class ClientRuntime {
-    private static final KeyMapping.Category CATEGORY = new KeyMapping.Category(
-            Identifier.fromNamespaceAndPath(IdleCinematics.MOD_ID, "controls"));
+    private static final String CATEGORY = "key.categories.idlecinematics";
     private static final KeyMapping TOGGLE = new KeyMapping("key.idlecinematics.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F8, CATEGORY);
     private static final KeyMapping FORCE = new KeyMapping("key.idlecinematics.force", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F9, CATEGORY);
     private static final ActivityState ACTIVITY = new ActivityState();
@@ -34,7 +32,6 @@ public final class ClientRuntime {
 
     @SubscribeEvent
     static void registerKeys(RegisterKeyMappingsEvent event) {
-        event.registerCategory(CATEGORY);
         event.register(TOGGLE);
         event.register(FORCE);
     }
