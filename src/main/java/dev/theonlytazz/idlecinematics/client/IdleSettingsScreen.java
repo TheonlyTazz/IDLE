@@ -34,7 +34,7 @@ public final class IdleSettingsScreen extends Screen {
         addRenderableWidget(new ValueSlider(left, y, Component.translatable("idlecinematics.settings.timeout"),
                 ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt(), 5, 300, 1, value -> ClientConfig.AFK_TIMEOUT_SECONDS.set((int) value), "s"));
         addRenderableWidget(new ValueSlider(right, y, Component.translatable("idlecinematics.settings.shot_duration"),
-                ClientConfig.SHOT_DURATION_SECONDS.getAsInt(), 6, 30, 1, value -> ClientConfig.SHOT_DURATION_SECONDS.set((int) value), "s"));
+                ClientConfig.SHOT_DURATION_SECONDS.getAsInt(), 5, 30, 1, value -> ClientConfig.SHOT_DURATION_SECONDS.set((int) value), "s"));
 
         y += 24;
         addRenderableWidget(new ValueSlider(left, y, Component.translatable("idlecinematics.settings.speed"),
