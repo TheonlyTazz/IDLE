@@ -1,4 +1,7 @@
-package dev.theonlytazz.idlecinematics.client;
+package dev.theonlytazz.idlecinematics.client.shots;
+
+import dev.theonlytazz.idlecinematics.client.camera.CameraPath;
+import dev.theonlytazz.idlecinematics.client.scene.SceneContext;
 
 import net.minecraft.world.phys.Vec3;
 

@@ -2,6 +2,9 @@ package dev.theonlytazz.idlecinematics.client;
 
 import dev.theonlytazz.idlecinematics.config.ClientConfig;
 import dev.theonlytazz.idlecinematics.core.SmoothMath;
+import dev.theonlytazz.idlecinematics.client.camera.*;
+import dev.theonlytazz.idlecinematics.client.scene.*;
+import dev.theonlytazz.idlecinematics.client.shots.*;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ClipContext;

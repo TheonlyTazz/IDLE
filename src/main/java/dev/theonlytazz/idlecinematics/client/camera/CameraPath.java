@@ -1,4 +1,4 @@
-package dev.theonlytazz.idlecinematics.client;
+package dev.theonlytazz.idlecinematics.client.camera;
 
 import net.minecraft.world.phys.Vec3;
 

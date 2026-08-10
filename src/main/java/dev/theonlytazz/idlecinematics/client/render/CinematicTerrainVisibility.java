@@ -1,4 +1,6 @@
-package dev.theonlytazz.idlecinematics.client;
+package dev.theonlytazz.idlecinematics.client.render;
+
+import dev.theonlytazz.idlecinematics.client.ClientRuntime;
 
 /** Limits the broad cinematic terrain pass to the section-graph traversal call stack. */
 public final class CinematicTerrainVisibility {

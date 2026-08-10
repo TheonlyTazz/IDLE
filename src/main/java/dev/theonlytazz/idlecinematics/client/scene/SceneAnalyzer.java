@@ -1,4 +1,4 @@
-package dev.theonlytazz.idlecinematics.client;
+package dev.theonlytazz.idlecinematics.client.scene;
 
 import dev.theonlytazz.idlecinematics.platform.ClientWorldAdapter;
 import net.minecraft.client.Minecraft;

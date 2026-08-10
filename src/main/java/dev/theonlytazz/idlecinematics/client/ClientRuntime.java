@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.theonlytazz.idlecinematics.IdleCinematics;
 import dev.theonlytazz.idlecinematics.config.ClientConfig;
 import dev.theonlytazz.idlecinematics.core.ActivityState;
+import dev.theonlytazz.idlecinematics.client.camera.CameraPose;
 import dev.theonlytazz.idlecinematics.platform.mixin.CameraAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
