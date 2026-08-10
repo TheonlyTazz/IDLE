@@ -205,7 +205,7 @@ def curseForgeProjectSlug = providers.environmentVariable('CURSEFORGE_PROJECT_SL
 publishMods {
     file = jar.archiveFile
     changelog = publishChangelogFile.exists() ? publishChangelogFile.text.trim() : ''
-    type = ALPHA
+    type = STABLE
     modLoaders.add('neoforge')
 
     curseforge {
