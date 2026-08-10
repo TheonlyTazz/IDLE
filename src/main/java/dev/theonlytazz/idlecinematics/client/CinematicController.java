@@ -9,8 +9,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.concurrent.ThreadLocalRandom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CinematicController {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Idle Cinematics");
     private static final double MIN_USEFUL_CAMERA_DISTANCE = 1.15;
     private static final int MAX_BLOCKED_TICKS = 6;
 
@@ -66,8 +69,8 @@ public final class CinematicController {
         phase += 0.011 * ClientConfig.PAN_SPEED.getAsDouble();
         double progress = Math.min(1.0, shotTick / (double) plan.durationTicks());
         Vec3 desired = plan.desiredPosition(progress, phase, ClientConfig.CAMERA_DISTANCE.getAsDouble());
-        Vec3 safe = avoidClipping(minecraft, plan.focus(), desired);
-        if (safe.distanceTo(plan.focus()) < MIN_USEFUL_CAMERA_DISTANCE) blockedTicks++; else blockedTicks = 0;
+        Vec3 safe = avoidClipping(minecraft, plan.cameraAnchor(), desired);
+        if (safe.distanceTo(plan.cameraAnchor()) < MIN_USEFUL_CAMERA_DISTANCE) blockedTicks++; else blockedTicks = 0;
         if (blockedTicks > MAX_BLOCKED_TICKS) {
             chooseShot(minecraft);
             return;
@@ -87,6 +90,9 @@ public final class CinematicController {
         blockedTicks = 0;
         SceneContext scene = sceneAnalyzer.analyze(minecraft, ClientConfig.INCLUDE_ENTITIES.getAsBoolean());
         plan = director.next(scene, ClientConfig.SHOT_MODE.get(), ClientConfig.SHOT_DURATION_SECONDS.getAsInt() * 20);
+        LOGGER.info("Selected cinematic preset: {} / {} [dimension={}, phase={}, enclosed={}, openDirections={}, entityTarget={}]",
+                plan.pool().name().toLowerCase(), plan.presetId(), scene.dimension(), scene.dayPhase(), scene.enclosed(),
+                scene.openDirections(), scene.nearbyEntityFocus().isPresent());
         phase += ThreadLocalRandom.current().nextDouble(0.35, 1.1);
     }
 
