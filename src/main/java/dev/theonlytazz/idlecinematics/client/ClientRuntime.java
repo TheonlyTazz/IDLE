@@ -116,9 +116,11 @@ public final class ClientRuntime {
     private static void showPresetDebug(Minecraft minecraft) {
         if (!ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean()) return;
         String selected = CAMERA.selectedPresetDescription();
-        if (selected.isEmpty() || selected.equals(lastDebugPreset)) return;
-        lastDebugPreset = selected;
-        LOGGER.info("Selected cinematic preset: {}", selected);
+        if (selected.isEmpty()) return;
+        if (!selected.equals(lastDebugPreset)) {
+            lastDebugPreset = selected;
+            LOGGER.info("Debug display changed to cinematic preset: {}", selected);
+        }
         minecraft.gui.setOverlayMessage(Component.literal("Idle preset: " + selected), false);
     }
 
