@@ -1,0 +1,7 @@
+{
+  "key.category.idlecinematics.controls": "Idle Cinematics",
+  "key.idlecinematics.toggle": "Toggle Cinematic Camera",
+  "key.idlecinematics.force": "Start Cinematic Camera",
+  "idlecinematics.enabled": "Idle Cinematics enabled",
+  "idlecinematics.disabled": "Idle Cinematics disabled"
+}

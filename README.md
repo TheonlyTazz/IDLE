@@ -1,25 +1,22 @@
+# Idle Cinematics
 
-Installation information
-=======
+A client-side cinematic camera for Minecraft 26.1.2 on NeoForge. After 25 seconds without keyboard or
+mouse input, the camera begins collision-aware orbit and drift shots around the local player. Any input exits at once.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+Inspired by [AFK Cinematics](https://www.curseforge.com/minecraft/mc-mods/afk-cinematics) for Fabric. Idle Cinematics
+is a fresh implementation for NeoForge.
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+## Controls
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+- `F8`: enable or disable automatic activation
+- `F9`: start or stop cinematic mode immediately
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+Client configuration is written by NeoForge to `config/idlecinematics-client.toml`. It includes the AFK timeout,
+pan speed, path mode, transition smoothing, and HUD visibility.
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## Development
+
+Minecraft 26.1.2 requires Java 25. Run `./gradlew build` (or `gradlew.bat build` on Windows). The distributable JAR
+is produced under `build/libs`. The version-neutral state and easing code is isolated in `core` to support a later
+Java 21 / Minecraft 1.21.1 adapter.
+

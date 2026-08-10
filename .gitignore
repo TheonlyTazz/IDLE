@@ -34,6 +34,7 @@ bin/
 
 ### Minecraft Modding ###
 run/
+afk-cinematics-*.jar
 !**/src/**/run/
 **/src/generated/**/.cache/
 repo/
