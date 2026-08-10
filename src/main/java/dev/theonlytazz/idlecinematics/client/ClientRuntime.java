@@ -8,6 +8,7 @@ import dev.theonlytazz.idlecinematics.platform.mixin.CameraAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -60,8 +61,11 @@ public final class ClientRuntime {
             stop();
             minecraft.setScreen(new IdleSettingsScreen(minecraft.screen));
         }
-        boolean usable = minecraft.player != null && minecraft.level != null && minecraft.screen == null && !minecraft.isPaused();
+        boolean chatOpen = minecraft.screen instanceof ChatScreen;
+        boolean usable = minecraft.player != null && minecraft.level != null
+                && (minecraft.screen == null || chatOpen) && !minecraft.isPaused();
         if (ACTIVITY.tick(usable, ClientConfig.ENABLED.getAsBoolean(), ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt() * 20)) {
+            if (chatOpen) minecraft.setScreen(null);
             CAMERA.start(minecraft);
         }
         if (ACTIVITY.isCinematic()) {
