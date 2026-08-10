@@ -15,6 +15,7 @@
   "idlecinematics.settings.shot_mode": "Shot selection",
   "idlecinematics.settings.entities": "Feature nearby mobs",
   "idlecinematics.settings.smoothing": "Smooth transitions",
+  "idlecinematics.settings.debug_preset": "Show selected preset",
   "idlecinematics.shot_mode.dynamic": "Context aware",
   "idlecinematics.shot_mode.player_focused": "Player focused",
   "idlecinematics.shot_mode.environment_focused": "Environment focused",

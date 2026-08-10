@@ -23,6 +23,8 @@ public final class ClientConfig {
     public static final ModConfigSpec.BooleanValue HIDE_HUD = BUILDER.define("hideHud", true);
     public static final ModConfigSpec.BooleanValue INCLUDE_ENTITIES = BUILDER.comment("Allow shots to feature nearby living entities")
             .define("includeNearbyEntities", true);
+    public static final ModConfigSpec.BooleanValue SHOW_DEBUG_PRESET = BUILDER.comment("Show the selected shot pool and preset while cinematic mode is active")
+            .define("showDebugPreset", false);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private ClientConfig() {}

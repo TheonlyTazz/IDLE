@@ -115,4 +115,8 @@ public final class CinematicController {
         double t = ClientConfig.SMOOTH_TRANSITIONS.getAsBoolean() ? SmoothMath.smootherStep(partialTick) : partialTick;
         return interpolate(previous, current, t);
     }
+
+    public String selectedPresetDescription() {
+        return plan == null ? "" : plan.pool().name().toLowerCase() + " / " + plan.presetId();
+    }
 }

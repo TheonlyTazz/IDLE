@@ -6,6 +6,8 @@ import java.util.random.RandomGenerator;
 public interface ShotPreset {
     String id();
 
+    ShotPool pool();
+
     Set<ShotTag> tags();
 
     double contextWeight(SceneContext scene);

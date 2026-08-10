@@ -20,14 +20,14 @@ public final class ShotDirector {
 
     public ShotPlan next(SceneContext scene, ClientConfig.ShotMode mode, int configuredDurationTicks) {
         List<WeightedPreset> candidates = new ArrayList<>();
-        ShotTag desiredCategory = desiredCategory(scene, mode);
+        ShotPool desiredPool = desiredPool(scene, mode);
         for (ShotPreset preset : registry.presets()) {
             if (!eligible(preset, scene, mode)) continue;
-            if (desiredCategory != null && categoryOf(preset) != desiredCategory) continue;
+            if (preset.pool() != desiredPool) continue;
             double weight = preset.contextWeight(scene) * historyFactor(preset.id());
             if (weight > 0.0) candidates.add(new WeightedPreset(preset, weight));
         }
-        if (candidates.isEmpty() && desiredCategory != null) {
+        if (candidates.isEmpty()) {
             for (ShotPreset preset : registry.presets()) {
                 if (!eligible(preset, scene, mode)) continue;
                 double weight = preset.contextWeight(scene) * historyFactor(preset.id());
@@ -54,13 +54,8 @@ public final class ShotDirector {
         if (preset.tags().contains(ShotTag.NETHER) && scene.dimension() != SceneContext.DimensionKind.NETHER) return false;
         if (preset.tags().contains(ShotTag.END) && scene.dimension() != SceneContext.DimensionKind.END) return false;
         if (preset.tags().contains(ShotTag.NIGHT) && scene.dayPhase() != SceneContext.DayPhase.NIGHT) return false;
-        if (scene.enclosed()) return true;
-        return switch (mode) {
-            case DYNAMIC -> true;
-            case PLAYER_FOCUSED -> preset.tags().contains(ShotTag.PLAYER);
-            case ENVIRONMENT_FOCUSED -> preset.tags().contains(ShotTag.ENVIRONMENT);
-            case CLASSIC -> preset.id().equals("orbit") || preset.id().equals("wide_orbit");
-        };
+        if (mode == ClientConfig.ShotMode.CLASSIC) return preset.id().equals("orbit") || preset.id().equals("wide_orbit");
+        return true;
     }
 
     private double historyFactor(String id) {
@@ -73,13 +68,29 @@ public final class ShotDirector {
         return 1.0;
     }
 
-    private ShotTag desiredCategory(SceneContext scene, ClientConfig.ShotMode mode) {
-        if (scene.enclosed()) return ShotTag.PLAYER;
-        if (mode == ClientConfig.ShotMode.PLAYER_FOCUSED || mode == ClientConfig.ShotMode.CLASSIC) return ShotTag.PLAYER;
-        if (mode == ClientConfig.ShotMode.ENVIRONMENT_FOCUSED) return ShotTag.ENVIRONMENT;
-        if (lastCategory == ShotTag.PLAYER && categoryStreak >= 2) return ShotTag.ENVIRONMENT;
-        if (lastCategory == ShotTag.ENVIRONMENT && categoryStreak >= 3) return ShotTag.PLAYER;
-        return ThreadLocalRandom.current().nextDouble() < 0.45 ? ShotTag.PLAYER : ShotTag.ENVIRONMENT;
+    private ShotPool desiredPool(SceneContext scene, ClientConfig.ShotMode mode) {
+        if (scene.enclosed()) return ShotPool.CAVE;
+        if (mode == ClientConfig.ShotMode.PLAYER_FOCUSED || mode == ClientConfig.ShotMode.CLASSIC) return ShotPool.PLAYER;
+        if (mode == ClientConfig.ShotMode.ENVIRONMENT_FOCUSED) return environmentPool(scene);
+        boolean choosePlayer = ThreadLocalRandom.current().nextDouble() < 0.45;
+        if (lastCategory == ShotTag.PLAYER && categoryStreak >= 2) choosePlayer = false;
+        if (lastCategory == ShotTag.ENVIRONMENT && categoryStreak >= 3) choosePlayer = true;
+        return choosePlayer ? ShotPool.PLAYER : environmentPool(scene);
+    }
+
+    private ShotPool environmentPool(SceneContext scene) {
+        if (scene.dimension() == SceneContext.DimensionKind.NETHER) return ShotPool.NETHER;
+        if (scene.dimension() == SceneContext.DimensionKind.END) return ShotPool.END;
+        if (scene.nearbyEntityFocus().isPresent() && ThreadLocalRandom.current().nextDouble() < 0.3) return ShotPool.ENTITY;
+        if (scene.openSky() && ThreadLocalRandom.current().nextDouble() < 0.6) {
+            return switch (scene.dayPhase()) {
+                case SUNRISE -> ShotPool.SUNRISE;
+                case DAY -> ShotPool.DAY;
+                case SUNSET -> ShotPool.SUNSET;
+                case NIGHT -> ShotPool.NIGHT;
+            };
+        }
+        return scene.nearbyEntityFocus().isPresent() && !scene.openArea() ? ShotPool.ENTITY : ShotPool.LANDSCAPE;
     }
 
     private ShotPreset choose(List<WeightedPreset> candidates, SceneContext scene) {

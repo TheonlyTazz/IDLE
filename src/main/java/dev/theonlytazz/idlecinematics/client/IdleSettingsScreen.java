@@ -53,7 +53,10 @@ public final class IdleSettingsScreen extends Screen {
         y += 24;
         addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SMOOTH_TRANSITIONS.getAsBoolean()).create(left, y, 150, 20,
                 Component.translatable("idlecinematics.settings.smoothing"), (button, value) -> ClientConfig.SMOOTH_TRANSITIONS.set(value)));
-        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).bounds(right, y, 150, 20).build());
+        addRenderableWidget(CycleButton.onOffBuilder(ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean()).create(right, y, 150, 20,
+                Component.translatable("idlecinematics.settings.debug_preset"), (button, value) -> ClientConfig.SHOW_DEBUG_PRESET.set(value)));
+        y += 24;
+        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose()).bounds(width / 2 - 75, y, 150, 20).build());
     }
 
     @Override
