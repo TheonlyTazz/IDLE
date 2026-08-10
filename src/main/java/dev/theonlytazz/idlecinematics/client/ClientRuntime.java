@@ -88,7 +88,10 @@ public final class ClientRuntime {
 
     @SubscribeEvent
     static void onKey(InputEvent.Key event) {
-        if (event.getAction() == InputConstants.PRESS) activity();
+        if (event.getAction() == InputConstants.PRESS
+                && !FORCE.matches(event.getKeyEvent())
+                && !TOGGLE.matches(event.getKeyEvent())
+                && !SETTINGS.matches(event.getKeyEvent())) activity();
     }
 
     @SubscribeEvent
