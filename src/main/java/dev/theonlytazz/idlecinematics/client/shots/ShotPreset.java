@@ -1,4 +1,6 @@
-package dev.theonlytazz.idlecinematics.client;
+package dev.theonlytazz.idlecinematics.client.shots;
+
+import dev.theonlytazz.idlecinematics.client.scene.SceneContext;
 
 import java.util.Set;
 import java.util.random.RandomGenerator;

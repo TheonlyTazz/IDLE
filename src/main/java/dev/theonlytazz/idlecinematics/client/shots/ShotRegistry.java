@@ -1,4 +1,4 @@
-package dev.theonlytazz.idlecinematics.client;
+package dev.theonlytazz.idlecinematics.client.shots;
 
 import java.util.ArrayList;
 import java.util.List;

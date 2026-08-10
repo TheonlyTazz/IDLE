@@ -1,6 +1,6 @@
 package dev.theonlytazz.idlecinematics.platform.mixin;
 
-import dev.theonlytazz.idlecinematics.client.CinematicTerrainVisibility;
+import dev.theonlytazz.idlecinematics.client.render.CinematicTerrainVisibility;
 import net.minecraft.client.renderer.SectionOcclusionGraph;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.client.renderer.culling.Frustum;
