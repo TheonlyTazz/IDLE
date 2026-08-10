@@ -13,7 +13,7 @@ public final class ClientConfig {
     public static final ModConfigSpec.DoubleValue PAN_SPEED = BUILDER.comment("Camera movement multiplier")
             .defineInRange("panSpeed", 1.0, 0.1, 4.0);
     public static final ModConfigSpec.IntValue SHOT_DURATION_SECONDS = BUILDER.comment("Seconds before choosing a new shot")
-            .defineInRange("shotDurationSeconds", 12, 6, 30);
+            .defineInRange("shotDurationSeconds", 9, 5, 30);
     public static final ModConfigSpec.EnumValue<ShotMode> SHOT_MODE = BUILDER.comment("How the shot director selects compositions")
             .defineEnum("shotMode", ShotMode.DYNAMIC);
     public static final ModConfigSpec.DoubleValue CAMERA_DISTANCE = BUILDER.comment("Camera distance multiplier")

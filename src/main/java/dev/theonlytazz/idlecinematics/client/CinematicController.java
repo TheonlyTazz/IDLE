@@ -83,25 +83,25 @@ public final class CinematicController {
     private void chooseShot(Minecraft minecraft) {
         transitionFrom = current;
         shotTick = 0;
-        shotLength = ClientConfig.SHOT_DURATION_SECONDS.getAsInt() * 20;
         boolean openSky = minecraft.player != null && minecraft.level != null
                 && minecraft.level.canSeeSky(BlockPos.containing(minecraft.player.getEyePosition()));
-        boolean underground = minecraft.player != null && minecraft.player.getY() < minecraft.level.getSeaLevel() - 8 && !openSky;
-        boolean openArea = isOpenArea(minecraft);
+        int openDirections = countOpenDirections(minecraft);
+        boolean cave = !openSky && (hasNearbyCeiling(minecraft) || openDirections <= 1);
+        boolean openArea = openDirections >= 3;
         long dayTime = minecraft.level.getOverworldClockTime() % 24000L;
         boolean goldenHour = dayTime < 2000L || (dayTime > 11000L && dayTime < 14000L);
         boolean companion = ClientConfig.INCLUDE_ENTITIES.getAsBoolean() && hasCompanion(minecraft);
         ClientConfig.ShotMode mode = ClientConfig.SHOT_MODE.get();
         List<ShotPreset> candidates = new ArrayList<>();
         for (ShotPreset shot : ShotPreset.values()) {
-            if (shot == preset || (shot.needsSky && !openSky) || (shot.underground && !underground)
+            if (shot == preset || (shot.needsSky && !openSky) || (shot.caveOnly != cave)
                     || (shot == ShotPreset.COMPANION && !companion)) continue;
             if (!openArea && (shot == ShotPreset.WIDE_ORBIT || shot == ShotPreset.REVEAL || shot == ShotPreset.SKYLINE)) continue;
-            if (mode == ClientConfig.ShotMode.PLAYER_FOCUSED && shot.environment) continue;
-            if (mode == ClientConfig.ShotMode.ENVIRONMENT_FOCUSED && !shot.environment) continue;
-            if (mode == ClientConfig.ShotMode.CLASSIC && shot != ShotPreset.ORBIT && shot != ShotPreset.WIDE_ORBIT) continue;
+            if (!cave && mode == ClientConfig.ShotMode.PLAYER_FOCUSED && shot.environment) continue;
+            if (!cave && mode == ClientConfig.ShotMode.ENVIRONMENT_FOCUSED && !shot.environment) continue;
+            if (!cave && mode == ClientConfig.ShotMode.CLASSIC && shot != ShotPreset.ORBIT && shot != ShotPreset.WIDE_ORBIT) continue;
             candidates.add(shot);
-            if ((underground && shot == ShotPreset.CAVE_TRACK) || (openSky && shot.environment) || (companion && shot == ShotPreset.COMPANION)) {
+            if ((cave && shot.caveOnly) || (openSky && shot.environment) || (companion && shot == ShotPreset.COMPANION)) {
                 candidates.add(shot); // context-fit shots receive an extra draw weight
             }
             if (goldenHour && shot == ShotPreset.GOLDEN_HOUR) {
@@ -111,6 +111,10 @@ public final class CinematicController {
         }
         if (candidates.isEmpty()) candidates.add(ShotPreset.ORBIT);
         preset = candidates.get(ThreadLocalRandom.current().nextInt(candidates.size()));
+        double configuredSeconds = ClientConfig.SHOT_DURATION_SECONDS.getAsInt();
+        double seconds = cave ? ThreadLocalRandom.current().nextDouble(4.5, 6.5)
+                : configuredSeconds * ThreadLocalRandom.current().nextDouble(0.72, 1.0);
+        shotLength = Math.max(80, (int) Math.round(seconds * 20.0));
         phase += ThreadLocalRandom.current().nextDouble(0.35, 1.1);
     }
 
@@ -119,15 +123,22 @@ public final class CinematicController {
         double forward = Math.cos(angle);
         return switch (shot) {
             case ORBIT -> new Vec3(forward * 5.4, 1.7 + Math.sin(angle * 0.6) * 0.35, side * 5.4);
+            case TIGHT_ORBIT -> new Vec3(forward * 3.25, 1.15 + Math.sin(angle) * 0.25, side * 3.25);
             case WIDE_ORBIT -> new Vec3(forward * 9.0, 3.8 + Math.sin(t * Math.PI) * 1.2, side * 9.0);
             case HERO_LOW -> new Vec3(forward * 4.2, -0.45 + Math.sin(t * Math.PI) * 0.45, side * 4.2);
             case PROFILE -> new Vec3(forward * 3.8, 1.15, side * 3.8);
             case OVER_SHOULDER -> new Vec3(forward * 2.25, 1.55, side * 2.25);
             case OVERHEAD -> new Vec3(forward * 2.6, 7.5, side * 2.6);
+            case PUSH_IN -> new Vec3(forward * (5.8 - t * 2.6), 1.35, side * (5.8 - t * 2.6));
+            case SIDE_SLIDE -> new Vec3(forward * 4.0 + side * (t - 0.5) * 3.0, 1.65, side * 4.0 - forward * (t - 0.5) * 3.0);
             case SKYLINE -> new Vec3(forward * 11.5, 5.5 + t * 1.5, side * 11.5);
             case GOLDEN_HOUR -> new Vec3(forward * 8.5, 2.8 + Math.sin(t * Math.PI) * 0.8, side * 8.5);
             case REVEAL -> new Vec3(forward * (3.5 + t * 8.0), 1.0 + t * 5.0, side * (3.5 + t * 8.0));
             case CAVE_TRACK -> new Vec3(forward * 3.2, 0.75 + Math.sin(t * Math.PI) * 0.5, side * 3.2);
+            case CAVE_CLOSE -> new Vec3(forward * 2.35, 0.65 + Math.sin(t * Math.PI) * 0.25, side * 2.35);
+            case CAVE_SHOULDER -> new Vec3(forward * 1.8, 1.3, side * 1.8);
+            case CAVE_ARC -> new Vec3(forward * 2.7, 1.05, side * 2.7);
+            case CAVE_LOW -> new Vec3(forward * 2.6, -0.15 + Math.sin(t * Math.PI) * 0.3, side * 2.6);
             case COMPANION -> new Vec3(forward * 6.0, 2.25, side * 6.0);
         };
     }
@@ -137,8 +148,8 @@ public final class CinematicController {
                 minecraft.player.getBoundingBox().inflate(10.0), entity -> entity != minecraft.player && entity.isAlive()).size() > 0;
     }
 
-    private boolean isOpenArea(Minecraft minecraft) {
-        if (minecraft.player == null || minecraft.level == null) return false;
+    private int countOpenDirections(Minecraft minecraft) {
+        if (minecraft.player == null || minecraft.level == null) return 0;
         Vec3 origin = minecraft.player.getEyePosition();
         int clear = 0;
         for (Vec3 direction : List.of(new Vec3(1, 0, 0), new Vec3(-1, 0, 0), new Vec3(0, 0, 1), new Vec3(0, 0, -1))) {
@@ -146,7 +157,15 @@ public final class CinematicController {
                     ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, minecraft.player));
             if (hit.getType() == HitResult.Type.MISS) clear++;
         }
-        return clear >= 3;
+        return clear;
+    }
+
+    private boolean hasNearbyCeiling(Minecraft minecraft) {
+        if (minecraft.player == null || minecraft.level == null) return false;
+        Vec3 origin = minecraft.player.getEyePosition();
+        HitResult hit = minecraft.level.clip(new ClipContext(origin, origin.add(0.0, 12.0, 0.0),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, minecraft.player));
+        return hit.getType() != HitResult.Type.MISS;
     }
 
     private Vec3 companionFocus(Minecraft minecraft, Vec3 fallback) {
