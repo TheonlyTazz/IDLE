@@ -7,6 +7,11 @@ import java.util.Optional;
 public record SceneContext(
         Vec3 playerFocus,
         Optional<Vec3> nearbyEntityFocus,
+        Vec3 openDirection,
+        Optional<Vec3> wallTarget,
+        Optional<Vec3> ceilingTarget,
+        Optional<Vec3> floorTarget,
+        Vec3 celestialTarget,
         DimensionKind dimension,
         DayPhase dayPhase,
         boolean openSky,

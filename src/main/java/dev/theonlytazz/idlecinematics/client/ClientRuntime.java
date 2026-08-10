@@ -17,9 +17,12 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @EventBusSubscriber(modid = IdleCinematics.MOD_ID, value = Dist.CLIENT)
 public final class ClientRuntime {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Idle Cinematics");
     private static final String CATEGORY = "key.categories.idlecinematics";
     private static final KeyMapping TOGGLE = new KeyMapping("key.idlecinematics.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F8, CATEGORY);
     private static final KeyMapping FORCE = new KeyMapping("key.idlecinematics.force", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F9, CATEGORY);
@@ -28,6 +31,7 @@ public final class ClientRuntime {
     private static final CinematicController CAMERA = new CinematicController();
     private static double lastMouseX = Double.NaN;
     private static double lastMouseY = Double.NaN;
+    private static String lastDebugPreset = "";
 
     private ClientRuntime() {}
 
@@ -60,7 +64,10 @@ public final class ClientRuntime {
         if (ACTIVITY.tick(usable, ClientConfig.ENABLED.getAsBoolean(), ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt() * 20)) {
             CAMERA.start(minecraft);
         }
-        if (ACTIVITY.isCinematic()) CAMERA.tick(minecraft);
+        if (ACTIVITY.isCinematic()) {
+            CAMERA.tick(minecraft);
+            showPresetDebug(minecraft);
+        }
     }
 
     private static void pollMouse(Minecraft minecraft) {
@@ -86,7 +93,8 @@ public final class ClientRuntime {
 
     @SubscribeEvent
     static void hideHud(RenderGuiEvent.Pre event) {
-        if (ACTIVITY.isCinematic() && ClientConfig.HIDE_HUD.getAsBoolean()) event.setCanceled(true);
+        if (ACTIVITY.isCinematic() && ClientConfig.HIDE_HUD.getAsBoolean()
+                && !ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean()) event.setCanceled(true);
     }
 
     private static void activity() {
@@ -102,6 +110,16 @@ public final class ClientRuntime {
     private static void stop() {
         ACTIVITY.reset();
         CAMERA.stop();
+        lastDebugPreset = "";
+    }
+
+    private static void showPresetDebug(Minecraft minecraft) {
+        if (!ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean()) return;
+        String selected = CAMERA.selectedPresetDescription();
+        if (selected.isEmpty() || selected.equals(lastDebugPreset)) return;
+        lastDebugPreset = selected;
+        LOGGER.info("Selected cinematic preset: {}", selected);
+        minecraft.gui.setOverlayMessage(Component.literal("Idle preset: " + selected), false);
     }
 
     public static void applyCamera(Camera camera, float partialTick) {
