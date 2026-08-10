@@ -2,6 +2,21 @@
   "key.category.idlecinematics.controls": "Idle Cinematics",
   "key.idlecinematics.toggle": "Toggle Cinematic Camera",
   "key.idlecinematics.force": "Start Cinematic Camera",
+  "key.idlecinematics.settings": "Open Settings",
   "idlecinematics.enabled": "Idle Cinematics enabled",
-  "idlecinematics.disabled": "Idle Cinematics disabled"
+  "idlecinematics.disabled": "Idle Cinematics disabled",
+  "idlecinematics.settings.title": "Idle Cinematics Settings",
+  "idlecinematics.settings.enabled": "Automatic activation",
+  "idlecinematics.settings.hide_hud": "Hide HUD",
+  "idlecinematics.settings.timeout": "AFK timeout",
+  "idlecinematics.settings.shot_duration": "Shot duration",
+  "idlecinematics.settings.speed": "Camera speed",
+  "idlecinematics.settings.distance": "Camera distance",
+  "idlecinematics.settings.shot_mode": "Shot selection",
+  "idlecinematics.settings.entities": "Feature nearby mobs",
+  "idlecinematics.settings.smoothing": "Smooth transitions",
+  "idlecinematics.shot_mode.dynamic": "Context aware",
+  "idlecinematics.shot_mode.player_focused": "Player focused",
+  "idlecinematics.shot_mode.environment_focused": "Environment focused",
+  "idlecinematics.shot_mode.classic": "Classic orbits"
 }
