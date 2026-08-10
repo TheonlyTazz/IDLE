@@ -23,6 +23,7 @@ public final class ClientRuntime {
     private static final String CATEGORY = "key.categories.idlecinematics";
     private static final KeyMapping TOGGLE = new KeyMapping("key.idlecinematics.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F8, CATEGORY);
     private static final KeyMapping FORCE = new KeyMapping("key.idlecinematics.force", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F9, CATEGORY);
+    private static final KeyMapping SETTINGS = new KeyMapping("key.idlecinematics.settings", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_F10, CATEGORY);
     private static final ActivityState ACTIVITY = new ActivityState();
     private static final CinematicController CAMERA = new CinematicController();
     private static double lastMouseX = Double.NaN;
@@ -34,6 +35,7 @@ public final class ClientRuntime {
     static void registerKeys(RegisterKeyMappingsEvent event) {
         event.register(TOGGLE);
         event.register(FORCE);
+        event.register(SETTINGS);
     }
 
     @SubscribeEvent
@@ -49,6 +51,10 @@ public final class ClientRuntime {
         }
         while (FORCE.consumeClick()) {
             if (ACTIVITY.isCinematic()) stop(); else start(minecraft);
+        }
+        while (SETTINGS.consumeClick()) {
+            stop();
+            minecraft.setScreen(new IdleSettingsScreen(minecraft.screen));
         }
         boolean usable = minecraft.player != null && minecraft.level != null && minecraft.screen == null && !minecraft.isPaused();
         if (ACTIVITY.tick(usable, ClientConfig.ENABLED.getAsBoolean(), ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt() * 20)) {
