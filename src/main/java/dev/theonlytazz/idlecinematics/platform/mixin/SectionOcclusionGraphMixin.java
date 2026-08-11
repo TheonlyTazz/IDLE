@@ -15,16 +15,14 @@ import java.util.List;
 abstract class SectionOcclusionGraphMixin {
     @Inject(method = "addSectionsInFrustum", at = @At("HEAD"))
     private void idlecinematics$beginBroadTerrainPass(Frustum frustum,
-                                                       List<SectionRenderDispatcher.RenderSection> visibleSections,
-                                                       List<SectionRenderDispatcher.RenderSection> nearbySections,
+                                                       List<SectionRenderDispatcher.RenderSection> sections,
                                                        CallbackInfo callback) {
         CinematicTerrainVisibility.beginSectionGraphPass();
     }
 
     @Inject(method = "addSectionsInFrustum", at = @At("RETURN"))
     private void idlecinematics$endBroadTerrainPass(Frustum frustum,
-                                                     List<SectionRenderDispatcher.RenderSection> visibleSections,
-                                                     List<SectionRenderDispatcher.RenderSection> nearbySections,
+                                                     List<SectionRenderDispatcher.RenderSection> sections,
                                                      CallbackInfo callback) {
         CinematicTerrainVisibility.endSectionGraphPass();
     }
