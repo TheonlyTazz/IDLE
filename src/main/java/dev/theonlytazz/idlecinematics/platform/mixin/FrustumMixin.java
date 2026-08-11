@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Frustum.class)
 abstract class FrustumMixin {
     @Inject(method = "cubeInFrustum(Lnet/minecraft/world/level/levelgen/structure/BoundingBox;)I",
-            at = @At("HEAD"), cancellable = true)
+            at = @At("HEAD"), cancellable = true, require = 0)
     private void idlecinematics$keepTerrainBranchesReady(BoundingBox box,
                                                           CallbackInfoReturnable<Integer> callback) {
         if (CinematicTerrainVisibility.shouldKeepTerrainReady()) callback.setReturnValue(-2);
