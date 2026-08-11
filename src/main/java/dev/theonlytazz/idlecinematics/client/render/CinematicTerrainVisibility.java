@@ -2,7 +2,7 @@ package dev.theonlytazz.idlecinematics.client.render;
 
 import dev.theonlytazz.idlecinematics.client.ClientRuntime;
 
-/** Limits the broad cinematic terrain pass to the section-graph traversal call stack. */
+/** Keeps terrain frustum checks permissive for the duration of a cinematic shot. */
 public final class CinematicTerrainVisibility {
     private static final ThreadLocal<Boolean> SECTION_GRAPH_PASS = ThreadLocal.withInitial(() -> false);
 
@@ -17,6 +17,9 @@ public final class CinematicTerrainVisibility {
     }
 
     public static boolean shouldKeepTerrainReady() {
-        return SECTION_GRAPH_PASS.get() && ClientRuntime.isCinematicActive();
+        // The section graph and the later chunk render pass do not share one call stack.
+        // Restricting this to SECTION_GRAPH_PASS leaves later frustum checks able to cull
+        // terrain that the cinematic camera has moved toward or behind.
+        return ClientRuntime.isCinematicActive();
     }
 }
