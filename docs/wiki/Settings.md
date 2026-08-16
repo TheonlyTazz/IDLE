@@ -15,3 +15,9 @@ draft until the hub's **Done** button is pressed.
 The darker central panel, fixed title area, and fixed footer follow vanilla's options-screen layout and keep the
 controls readable over the blurred game background. The scene selector uses a scrolling list; see
 [Scene Settings](Scene-Settings.md) for its preset and addon behavior.
+
+## Relevant defaults
+
+- **Exit on focus regain:** Off. Returning to the window without providing input leaves IDLE running.
+- **Timer title:** Off. The elapsed time is shown without the `AFK ·` prefix.
+- **Overlay anchor:** Top left.

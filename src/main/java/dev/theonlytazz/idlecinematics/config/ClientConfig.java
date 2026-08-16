@@ -31,11 +31,11 @@ public final class ClientConfig {
             .define("showDebugPreset", false);
     public static final ModConfigSpec.BooleanValue COUNTDOWN_ENABLED = BUILDER.define("countdownEnabled", true);
     public static final ModConfigSpec.IntValue COUNTDOWN_SECONDS = BUILDER.defineInRange("countdownSeconds", 3, 0, 10);
-    public static final ModConfigSpec.BooleanValue EXIT_ON_FOCUS_REGAIN = BUILDER.define("exitOnFocusRegain", true);
-    public static final ModConfigSpec.BooleanValue SHOW_TIMER_TITLE = BUILDER.define("showTimerTitle", true);
+    public static final ModConfigSpec.BooleanValue EXIT_ON_FOCUS_REGAIN = BUILDER.define("exitOnFocusRegain", false);
+    public static final ModConfigSpec.BooleanValue SHOW_TIMER_TITLE = BUILDER.define("showTimerTitle", false);
     public static final ModConfigSpec.BooleanValue SHOW_AFK_TIMER = BUILDER.define("showAfkTimer", true);
     public static final ModConfigSpec.DoubleValue HUD_SCALE = BUILDER.defineInRange("hudScale", 1.0, 0.5, 2.0);
-    public static final ModConfigSpec.EnumValue<HudAnchor> HUD_ANCHOR = BUILDER.defineEnum("hudAnchor", HudAnchor.TOP_RIGHT);
+    public static final ModConfigSpec.EnumValue<HudAnchor> HUD_ANCHOR = BUILDER.defineEnum("hudAnchor", HudAnchor.TOP_LEFT);
     public static final ModConfigSpec.BooleanValue ENABLE_NEW_MOTIONS = BUILDER.define("enableNewMotionFamilies", true);
     public static final ModConfigSpec.ConfigValue<String> DISABLED_PRESETS = BUILDER
             .comment("Comma-separated namespaced cinematic preset identifiers disabled by the user")

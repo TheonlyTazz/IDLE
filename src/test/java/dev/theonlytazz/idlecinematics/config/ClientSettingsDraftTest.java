@@ -11,6 +11,8 @@ final class ClientSettingsDraftTest {
         draft.resetDefaults();
         assertTrue(draft.enabled); assertEquals(25, draft.timeoutSeconds); assertFalse(draft.fpsCapEnabled);
         assertEquals(30, draft.fpsCap); assertEquals(55, draft.fov); assertEquals(0.35, draft.masterVolume);
+        assertFalse(draft.exitOnFocusRegain); assertFalse(draft.showTimerTitle);
+        assertEquals(ClientConfig.HudAnchor.TOP_LEFT, draft.hudAnchor);
     }
 
     @Test void applyValidatesAndCommitsWhileCancelDoesNothing() {

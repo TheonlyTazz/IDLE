@@ -82,7 +82,7 @@ public final class ClientSettingsDraft {
 
     public void resetGeneralDefaults() {
         enabled = true; timeoutSeconds = 25;
-        countdownEnabled = true; countdownSeconds = 3; exitOnFocusRegain = true;
+        countdownEnabled = true; countdownSeconds = 3; exitOnFocusRegain = false;
     }
 
     public void resetCameraDefaults() {
@@ -101,7 +101,7 @@ public final class ClientSettingsDraft {
 
     public void resetHudDefaults() {
         hideHud = true;
-        showTimerTitle = true; showTimer = true; hudScale = 1.0; hudAnchor = ClientConfig.HudAnchor.TOP_RIGHT;
+        showTimerTitle = false; showTimer = true; hudScale = 1.0; hudAnchor = ClientConfig.HudAnchor.TOP_LEFT;
     }
 
     public void resetDebugDefaults() { debug = false; }
