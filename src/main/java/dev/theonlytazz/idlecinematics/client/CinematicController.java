@@ -15,6 +15,7 @@ import dev.theonlytazz.idlecinematics.client.shots.BoundedShotSelector;
 import dev.theonlytazz.idlecinematics.client.shots.ShotPlan;
 import dev.theonlytazz.idlecinematics.client.shots.ShotRegistry;
 import dev.theonlytazz.idlecinematics.config.ClientConfig;
+import dev.theonlytazz.idlecinematics.config.PresetPreferences;
 import dev.theonlytazz.idlecinematics.core.NamespacedId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ClipContext;
@@ -225,17 +226,9 @@ public final class CinematicController {
                 : pool.equals("entity") ? ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean()
                 : pool.equals("sunrise") || pool.equals("day") || pool.equals("sunset") || pool.equals("night")
                         ? ClientConfig.CELESTIAL_POOL_ENABLED.getAsBoolean() : ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean();
-        return poolEnabled && (ClientConfig.ENABLE_NEW_MOTIONS.getAsBoolean() || !isNewMotion(preset.id().path()));
-    }
-
-    private static boolean isNewMotion(String id) {
-        return switch (id) {
-            case "orbit", "tight_orbit", "wide_orbit", "hero_low", "profile", "over_shoulder", "overhead",
-                    "push_in", "side_slide", "landscape_reveal", "landscape_crosspan", "entity_two_shot",
-                    "cave_passage", "cave_wall_detail", "cave_close_portrait", "nether_ridge", "nether_passage",
-                    "end_spire", "end_gateway_drift", "sunrise_horizon", "day_high_sky", "sunset_rim", "night_moonline" -> false;
-            default -> true;
-        };
+        return poolEnabled && PresetPreferences.isEnabled(preset.id().toString(),
+                PresetPreferences.parseDisabled(ClientConfig.DISABLED_PRESETS.get()),
+                ClientConfig.ENABLE_NEW_MOTIONS.getAsBoolean());
     }
 
     public CameraPose sample(float partialTick) {

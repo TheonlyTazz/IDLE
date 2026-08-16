@@ -1,5 +1,8 @@
 package dev.theonlytazz.idlecinematics.config;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /** Transactional settings model. Widgets never mutate live config before Apply. */
 public final class ClientSettingsDraft {
     public boolean enabled;
@@ -21,6 +24,7 @@ public final class ClientSettingsDraft {
     public double hudScale;
     public ClientConfig.HudAnchor hudAnchor;
     public boolean newMotions;
+    public final Set<String> disabledPresets = new LinkedHashSet<>();
     public boolean playerPool;
     public boolean landscapePool;
     public boolean entityPool;
@@ -53,6 +57,7 @@ public final class ClientSettingsDraft {
         draft.hudScale = ClientConfig.HUD_SCALE.getAsDouble();
         draft.hudAnchor = ClientConfig.HUD_ANCHOR.get();
         draft.newMotions = ClientConfig.ENABLE_NEW_MOTIONS.getAsBoolean();
+        draft.disabledPresets.addAll(PresetPreferences.parseDisabled(ClientConfig.DISABLED_PRESETS.get()));
         draft.playerPool = ClientConfig.PLAYER_POOL_ENABLED.getAsBoolean();
         draft.landscapePool = ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean();
         draft.entityPool = ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean();
@@ -72,13 +77,23 @@ public final class ClientSettingsDraft {
         transitionIntensity = 1.0; hideHud = true; includeEntities = true; debug = false;
         countdownEnabled = true; countdownSeconds = 3; exitOnFocusRegain = true;
         showTimerTitle = true; showTimer = true; hudScale = 1.0; hudAnchor = ClientConfig.HudAnchor.TOP_RIGHT;
-        newMotions = true; playerPool = true; landscapePool = true; entityPool = true; celestialPool = true;
+        newMotions = true; disabledPresets.clear(); playerPool = true; landscapePool = true; entityPool = true; celestialPool = true;
         fpsCapEnabled = false; fpsCap = 30; fovEnabled = false; fov = 55;
         audioEnabled = false; masterVolume = 0.35;
     }
 
     public void apply() {
         commitTo(draft -> draft.writeLiveConfig());
+    }
+
+    public boolean sceneEnabled(String id) {
+        return PresetPreferences.isEnabled(id, disabledPresets, newMotions);
+    }
+
+    public void setSceneEnabled(String id, boolean enabled) {
+        PresetPreferences.migrateLegacyChoice(disabledPresets, newMotions);
+        newMotions = true;
+        if (enabled) disabledPresets.remove(id); else disabledPresets.add(id);
     }
 
     public void commitTo(java.util.function.Consumer<ClientSettingsDraft> sink) {
@@ -97,6 +112,7 @@ public final class ClientSettingsDraft {
         ClientConfig.SHOW_TIMER_TITLE.set(showTimerTitle); ClientConfig.SHOW_AFK_TIMER.set(showTimer);
         ClientConfig.HUD_SCALE.set(hudScale); ClientConfig.HUD_ANCHOR.set(hudAnchor);
         ClientConfig.ENABLE_NEW_MOTIONS.set(newMotions); ClientConfig.FPS_CAP_ENABLED.set(fpsCapEnabled);
+        ClientConfig.DISABLED_PRESETS.set(PresetPreferences.encodeDisabled(disabledPresets));
         ClientConfig.PLAYER_POOL_ENABLED.set(playerPool); ClientConfig.LANDSCAPE_POOL_ENABLED.set(landscapePool);
         ClientConfig.ENTITY_POOL_ENABLED.set(entityPool); ClientConfig.CELESTIAL_POOL_ENABLED.set(celestialPool);
         ClientConfig.FPS_CAP.set(fpsCap); ClientConfig.CINEMATIC_FOV_ENABLED.set(fovEnabled);

@@ -37,6 +37,9 @@ public final class ClientConfig {
     public static final ModConfigSpec.DoubleValue HUD_SCALE = BUILDER.defineInRange("hudScale", 1.0, 0.5, 2.0);
     public static final ModConfigSpec.EnumValue<HudAnchor> HUD_ANCHOR = BUILDER.defineEnum("hudAnchor", HudAnchor.TOP_RIGHT);
     public static final ModConfigSpec.BooleanValue ENABLE_NEW_MOTIONS = BUILDER.define("enableNewMotionFamilies", true);
+    public static final ModConfigSpec.ConfigValue<String> DISABLED_PRESETS = BUILDER
+            .comment("Comma-separated namespaced cinematic preset identifiers disabled by the user")
+            .define("disabledCinematicPresets", "");
     public static final ModConfigSpec.BooleanValue PLAYER_POOL_ENABLED = BUILDER.define("playerShotPoolEnabled", true);
     public static final ModConfigSpec.BooleanValue LANDSCAPE_POOL_ENABLED = BUILDER.define("landscapeShotPoolEnabled", true);
     public static final ModConfigSpec.BooleanValue ENTITY_POOL_ENABLED = BUILDER.define("entityShotPoolEnabled", true);

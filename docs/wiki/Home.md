@@ -9,6 +9,7 @@ collision, subject retention, detached-camera rendering, and immediate cleanup.
 - [Add-on Developer Guide](Addon-Developer-Guide.md) — dependency setup, registration, and a complete first preset.
 - [Preset API Reference](Preset-API-Reference.md) — every API type, pool, tag, transition, and safety field.
 - [Scene Cookbook](Scene-Cookbook.md) — player, terrain, entity, cave, and celestial recipes.
+- [Scene Settings](Scene-Settings.md) — enable built-in and addon scenes individually.
 - [Versioning and Compatibility](Versioning-and-Compatibility.md) — API version checks and dual-version support.
 
 ## Design contract

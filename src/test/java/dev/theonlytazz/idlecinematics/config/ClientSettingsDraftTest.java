@@ -22,4 +22,17 @@ final class ClientSettingsDraftTest {
         committed.set(false); // A cancelled screen simply discards its draft and never invokes commitTo.
         assertFalse(committed.get());
     }
+
+    @Test void individualSceneChoiceMigratesTheLegacyGroupWithoutEnablingItsPeers() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.resetDefaults();
+        draft.newMotions = false;
+
+        draft.setSceneEnabled("idlecinematics:terrain_scout", true);
+
+        assertTrue(draft.newMotions);
+        assertTrue(draft.sceneEnabled("idlecinematics:terrain_scout"));
+        assertFalse(draft.sceneEnabled("idlecinematics:entity_portrait"));
+        assertTrue(draft.sceneEnabled("example_addon:custom_scene"));
+    }
 }

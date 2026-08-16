@@ -49,7 +49,9 @@ public final class IdleSettingsScreen extends Screen {
             }
             case SCENES -> {
                 toggle(left, y, "entities", draft.includeEntities, value -> draft.includeEntities = value);
-                toggle(right, y, "new_motions", draft.newMotions, value -> draft.newMotions = value);
+                addRenderableWidget(Button.builder(label("configure_scenes"),
+                        button -> minecraft.setScreen(new SceneSelectionScreen(this, draft)))
+                        .bounds(right, y, 150, 20).build());
                 toggle(left, y + 24, "player_pool", draft.playerPool, value -> draft.playerPool = value);
                 toggle(right, y + 24, "landscape_pool", draft.landscapePool, value -> draft.landscapePool = value);
                 toggle(left, y + 48, "entity_pool", draft.entityPool, value -> draft.entityPool = value);
