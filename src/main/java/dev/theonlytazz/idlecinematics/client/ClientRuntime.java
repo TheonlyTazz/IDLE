@@ -74,7 +74,7 @@ public final class ClientRuntime {
             minecraft.setScreen(new IdleSettingsScreen(minecraft.screen));
         }
 
-        boolean settings = minecraft.screen instanceof IdleSettingsScreen;
+        boolean settings = minecraft.screen instanceof IdleSettingsView;
         if (ACTIVITY.mode() == ActivityState.Mode.SUSPENDED && !settings) ACTIVITY.resume();
         if (settings && ACTIVITY.mode() == ActivityState.Mode.ACTIVE) ACTIVITY.suspend();
         boolean chat = minecraft.screen instanceof ChatScreen;
@@ -155,7 +155,7 @@ public final class ClientRuntime {
     }
 
     private static void activity(Minecraft minecraft) {
-        if (minecraft.screen instanceof IdleSettingsScreen && ACTIVITY.mode() == ActivityState.Mode.SUSPENDED) return;
+        if (minecraft.screen instanceof IdleSettingsView && ACTIVITY.mode() == ActivityState.Mode.SUSPENDED) return;
         handleTransition(minecraft, ACTIVITY.activity());
     }
     private static void handleTransition(Minecraft minecraft, ActivityState.Transition transition) {
