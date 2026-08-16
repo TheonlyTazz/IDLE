@@ -1,5 +1,11 @@
 # Versioning and Compatibility
 
+## 1.2 landmark API
+
+The preset API remains version 1. IDLE 1.2 adds the independently versioned `CinematicLandmarks` API version 1.
+Landmark definitions are source-compatible across the 26.1.2 and 1.21.1 branches; only target-mod block IDs may
+differ between game versions.
+
 ## API version
 
 IDLE 1.1 exposes API version 1:

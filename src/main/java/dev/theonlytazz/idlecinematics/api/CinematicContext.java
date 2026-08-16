@@ -21,7 +21,9 @@ public record CinematicContext(
         List<CinematicSubject> nearbySubjects,
         Optional<CinematicSubject> selectedSubject,
         Optional<CinematicSubject> terrainTarget,
-        Optional<CinematicSubject> celestialTarget) {
+        Optional<CinematicSubject> celestialTarget,
+        List<CinematicLandmark> nearbyLandmarks,
+        Optional<CinematicLandmark> selectedLandmark) {
 
     public CinematicContext {
         Objects.requireNonNull(player, "player");
@@ -34,8 +36,22 @@ public record CinematicContext(
         selectedSubject = Objects.requireNonNull(selectedSubject, "selectedSubject");
         terrainTarget = Objects.requireNonNull(terrainTarget, "terrainTarget");
         celestialTarget = Objects.requireNonNull(celestialTarget, "celestialTarget");
+        nearbyLandmarks = List.copyOf(nearbyLandmarks);
+        selectedLandmark = Objects.requireNonNull(selectedLandmark, "selectedLandmark");
         lightLevel = Math.max(0, Math.min(15, lightLevel));
         effectiveRenderDistance = Math.max(2, effectiveRenderDistance);
+    }
+
+    /** Source-compatible API-v1 constructor for presets that do not consume landmarks. */
+    public CinematicContext(CinematicSubject player, DimensionKind dimension, DayPhase dayPhase, boolean enclosed,
+                            boolean openSky, Weather weather, FluidState fluidState, int lightLevel,
+                            int effectiveRenderDistance, double ceilingClearance, double floorDrop,
+                            List<DirectionalProbe> directions, List<CinematicSubject> nearbySubjects,
+                            Optional<CinematicSubject> selectedSubject, Optional<CinematicSubject> terrainTarget,
+                            Optional<CinematicSubject> celestialTarget) {
+        this(player, dimension, dayPhase, enclosed, openSky, weather, fluidState, lightLevel,
+                effectiveRenderDistance, ceilingClearance, floorDrop, directions, nearbySubjects, selectedSubject,
+                terrainTarget, celestialTarget, List.of(), Optional.empty());
     }
 
     public boolean openArea() { return directions.stream().filter(probe -> probe.openDistance() >= 11.9).count() >= 4; }

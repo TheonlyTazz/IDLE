@@ -3,6 +3,7 @@ package dev.theonlytazz.idlecinematics;
 import dev.theonlytazz.idlecinematics.config.ClientConfig;
 import dev.theonlytazz.idlecinematics.client.IdleSettingsScreen;
 import dev.theonlytazz.idlecinematics.api.CinematicPresets;
+import dev.theonlytazz.idlecinematics.api.CinematicLandmarks;
 import dev.theonlytazz.idlecinematics.client.profile.TemporaryClientProfile;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
@@ -20,11 +21,15 @@ public final class IdleCinematics {
         IConfigScreenFactory configScreenFactory = (modContainer, parent) -> new IdleSettingsScreen(parent);
         container.registerExtensionPoint(IConfigScreenFactory.class, configScreenFactory);
         CinematicPresets.bootstrap();
+        CinematicLandmarks.bootstrap();
         container.getEventBus().addListener(IdleCinematics::onClientSetup);
         TemporaryClientProfile.recoverAtStartup();
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(CinematicPresets::completeRegistration);
+        event.enqueueWork(() -> {
+            CinematicLandmarks.completeRegistration();
+            CinematicPresets.completeRegistration();
+        });
     }
 }
