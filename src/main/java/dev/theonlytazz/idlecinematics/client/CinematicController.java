@@ -119,14 +119,20 @@ public final class CinematicController {
         }
         semanticState = damping.update(desired, transition, TICK_SECONDS);
         Vec3 resolved = semanticState.resolvePosition(ClientConfig.CAMERA_DISTANCE.getAsDouble());
-        CameraVolumeCollision.Result safe = collision(minecraft, semanticState.focus(), resolved, plan.safety().collisionRadius());
+        double subjectClearance = subjectClearance(plan, semanticState.focus(), resolved);
+        CameraVolumeCollision.Result safe = collision(minecraft, semanticState.focus(), resolved,
+                plan.safety().collisionRadius(), subjectClearance);
         collided = safe.collided();
         currentPose = lookAt(safe.position(), semanticState.focus(), semanticState.roll(), plan.safety().minimumPitch(), plan.safety().maximumPitch());
         shotTick++;
     }
 
     private void chooseShot(Minecraft minecraft) {
-        context = sceneAnalyzer.analyze(minecraft, ClientConfig.INCLUDE_ENTITIES.getAsBoolean(), random);
+        boolean includeEntities = ClientConfig.INCLUDE_ENTITIES.getAsBoolean()
+                && ShotRegistry.active().presets().stream()
+                        .anyMatch(preset -> (preset.pool().equals("entity") || preset.tags().contains("entity"))
+                                && presetEnabled(preset));
+        context = sceneAnalyzer.analyze(minecraft, includeEntities, random);
         plan = BoundedShotSelector.choose(MAX_RESELECTION_ATTEMPTS,
                 () -> director.next(context, ClientConfig.SHOT_MODE.get(), ClientConfig.SHOT_DURATION_SECONDS.getAsInt() * 20),
                 candidate -> validPlan(minecraft, candidate), () -> guaranteedFallback(context));
@@ -149,9 +155,12 @@ public final class CinematicController {
         for (double sample : new double[]{0.0, 0.5, 1.0}) {
             CinematicRigState rig = constrain(candidate.motion().sample(sample, sample * candidate.durationTicks() * TICK_SECONDS), candidate.safety());
             Vec3 position = rig.resolvePosition(ClientConfig.CAMERA_DISTANCE.getAsDouble());
-            CameraVolumeCollision.Result result = collision(minecraft, rig.focus(), position, candidate.safety().collisionRadius());
+            double subjectClearance = subjectClearance(candidate, rig.focus(), position);
+            CameraVolumeCollision.Result result = collision(minecraft, rig.focus(), position,
+                    candidate.safety().collisionRadius(), subjectClearance);
             if (result.distance() < candidate.safety().minimumDistance()) return false;
-            if (!visible(minecraft, result.position(), rig.focus(), candidate.safety().obstructionTolerance())) return false;
+            Vec3 visibilityTarget = clearancePoint(rig.focus(), result.position(), subjectClearance);
+            if (!visible(minecraft, result.position(), visibilityTarget, candidate.safety().obstructionTolerance())) return false;
             if (!fluidAllowed(minecraft, result.position(), candidate.safety().fluidPolicy())) return false;
         }
         return true;
@@ -164,8 +173,9 @@ public final class CinematicController {
         return policy == dev.theonlytazz.idlecinematics.api.SafetyPolicy.FluidPolicy.ALLOW_WATER && fluid.is(FluidTags.WATER);
     }
 
-    private CameraVolumeCollision.Result collision(Minecraft minecraft, Vec3 focus, Vec3 desired, double radius) {
-        return CameraVolumeCollision.resolve(focus, desired, radius, COLLISION_MARGIN, (start, end) -> {
+    private CameraVolumeCollision.Result collision(Minecraft minecraft, Vec3 focus, Vec3 desired, double radius,
+                                                   double subjectClearance) {
+        return CameraVolumeCollision.resolve(focus, desired, radius, COLLISION_MARGIN, subjectClearance, (start, end) -> {
             if (minecraft.level == null || !minecraft.level.getChunkSource().hasChunk(
                     net.minecraft.util.Mth.floor(end.x) >> 4, net.minecraft.util.Mth.floor(end.z) >> 4)) return OptionalDouble.of(0.0);
             HitResult hit = minecraft.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER,
@@ -174,6 +184,21 @@ public final class CinematicController {
             double total = start.distanceTo(end);
             return OptionalDouble.of(total <= 1.0e-8 ? 0.0 : start.distanceTo(hit.getLocation()) / total);
         });
+    }
+
+    private static double subjectClearance(ShotPlan shot, Vec3 focus, Vec3 camera) {
+        if (!shot.preset().tags().contains("landmark")) return 0.0;
+        double distance = focus.distanceTo(camera);
+        double subjectRadius = shot.subject().size() * 0.5;
+        return Math.min(subjectRadius + COLLISION_MARGIN,
+                Math.max(0.0, distance - shot.safety().minimumDistance()));
+    }
+
+    private static Vec3 clearancePoint(Vec3 focus, Vec3 camera, double clearance) {
+        Vec3 direction = camera.subtract(focus);
+        double distance = direction.length();
+        if (clearance <= 0.0 || distance < 1.0e-8) return focus;
+        return focus.add(direction.scale(Math.min(clearance, distance) / distance));
     }
 
     private static boolean visible(Minecraft minecraft, Vec3 camera, Vec3 focus, double tolerance) {
@@ -221,11 +246,9 @@ public final class CinematicController {
     }
 
     private static boolean presetEnabled(CinematicPreset preset) {
-        String pool = preset.pool();
-        boolean poolEnabled = pool.equals("player") || pool.equals("cave") ? ClientConfig.PLAYER_POOL_ENABLED.getAsBoolean()
-                : pool.equals("entity") ? ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean()
-                : pool.equals("sunrise") || pool.equals("day") || pool.equals("sunset") || pool.equals("night")
-                        ? ClientConfig.CELESTIAL_POOL_ENABLED.getAsBoolean() : ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean();
+        boolean poolEnabled = PresetPreferences.isPoolEnabled(preset.pool(),
+                ClientConfig.PLAYER_POOL_ENABLED.getAsBoolean(), ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean(),
+                ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean(), ClientConfig.CELESTIAL_POOL_ENABLED.getAsBoolean());
         return poolEnabled && PresetPreferences.isEnabled(preset.id().toString(),
                 PresetPreferences.parseDisabled(ClientConfig.DISABLED_PRESETS.get()),
                 ClientConfig.ENABLE_NEW_MOTIONS.getAsBoolean());
@@ -246,7 +269,9 @@ public final class CinematicController {
         return plan.pool() + " / " + plan.presetId() + " | " + effectiveTransition(plan.transition()).type().name().toLowerCase()
                 + " | " + plan.subject().type().name().toLowerCase() + " | "
                 + String.format(java.util.Locale.ROOT, "%.1fm", semanticState.distance()) + (collided ? " | collision" : "")
-                + " | " + (context.enclosed() ? "cave" : context.dimension().name().toLowerCase());
+                + " | " + (plan.preset().tags().contains("landmark")
+                        ? context.selectedLandmark().map(landmark -> landmark.typeId().toString()).orElse("landmark")
+                        : context.enclosed() ? "cave" : context.dimension().name().toLowerCase());
     }
     public boolean requiresPlayer() { return plan != null && (plan.subject().type() == CinematicSubject.Type.PLAYER || plan.preset().tags().contains("player")); }
     public Optional<UUID> entitySubjectId() { return plan == null || plan.subject().type() != CinematicSubject.Type.ENTITY ? Optional.empty() : plan.subject().entityId(); }

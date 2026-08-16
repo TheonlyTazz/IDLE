@@ -27,6 +27,7 @@ late conditional registration.
 |---|---|
 | `player` | Player-focused and dynamically selected actor scenes. |
 | `landscape` | Overworld environment scenes. |
+| `landmark` | A registered nearby block-entity landmark is available. |
 | `entity` | A validated living-entity subject is available. |
 | `cave` | The player is classified as enclosed. |
 | `nether` | The current dimension is the Nether. |
@@ -42,6 +43,7 @@ therefore use an existing pool in API version 1.
 - `open_sky`: requires direct sky visibility.
 - `wide`: requires an open area and at least eight chunks of effective render distance.
 - `entity`: requires a validated selected entity.
+- `landmark`: requires a selected registered landmark.
 - `nether`: requires the Nether.
 - `end`: requires the End.
 
@@ -61,6 +63,11 @@ The immutable selection-time snapshot supplies:
 - ceiling clearance and floor drop;
 - eight directional probes;
 - up to 64 nearby subjects.
+- up to 64 nearby registered landmarks and the highest-ranked selected landmark.
+
+`CinematicLandmark` supplies the definition identifier, matched block identifier, stable block position, focus,
+approximate framing radius, score, and semantic tags. `subject()` converts it to a world-position subject for use
+by a preset.
 
 Each directional probe includes its normalized direction, open distance, optional foreground and wall targets,
 floor drop, and camera clearance. Analysis never intentionally loads chunks.

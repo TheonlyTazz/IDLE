@@ -65,4 +65,32 @@ final class ClientSettingsDraftTest {
         assertTrue(draft.sceneEnabled("idlecinematics:orbit"));
         assertFalse(draft.playerPool);
     }
+
+    @Test void legacyPoolChoicesCanBeMaterializedIntoIndividualScenes() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.resetDefaults();
+        draft.playerPool = false;
+
+        assertFalse(draft.legacyPoolEnabled("player"));
+        assertFalse(draft.legacyPoolEnabled("cave"));
+        assertTrue(draft.legacyPoolEnabled("landmark"));
+
+        draft.setSceneEnabled("idlecinematics:orbit", false);
+        draft.finishLegacyPoolMigration();
+
+        assertTrue(draft.playerPool);
+        assertFalse(draft.sceneEnabled("idlecinematics:orbit"));
+    }
+
+    @Test void sceneResetRestoresLegacyEntityAnalysisForIndividualEntityScenes() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.resetDefaults();
+        draft.includeEntities = false;
+        draft.setSceneEnabled("idlecinematics:entity_portrait", false);
+
+        draft.resetSceneDefaults();
+
+        assertTrue(draft.includeEntities);
+        assertTrue(draft.sceneEnabled("idlecinematics:entity_portrait"));
+    }
 }
