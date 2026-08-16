@@ -13,8 +13,11 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /** Scrollable, categorized per-preset selector modeled after vanilla's key-bind list. */
 public final class SceneSelectionScreen extends Screen implements IdleSettingsView {
@@ -23,6 +26,8 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     private SceneList sceneList;
     private Button resetButton;
     private Button doneButton;
+    private final List<PresetEntry> presetEntries = new ArrayList<>();
+    private final List<CategoryEntry> categoryEntries = new ArrayList<>();
 
     public SceneSelectionScreen(Screen parent, ClientSettingsDraft draft) {
         super(Component.translatable("idlecinematics.settings.scene_selection"));
@@ -31,6 +36,9 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     }
 
     @Override protected void init() {
+        migrateLegacyPoolChoices();
+        presetEntries.clear();
+        categoryEntries.clear();
         sceneList = addRenderableWidget(new SceneList(minecraft, width, height - 94, 62));
         int footerY = height - 28;
         resetButton = addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset_to_default"),
@@ -46,6 +54,18 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     }
 
     @Override public void onClose() { minecraft.setScreen(parent); }
+
+    private void migrateLegacyPoolChoices() {
+        for (CinematicPreset preset : ShotRegistry.active().presets()) {
+            if (!draft.legacyPoolEnabled(preset.pool())) draft.setSceneEnabled(preset.id().toString(), false);
+        }
+        draft.finishLegacyPoolMigration();
+    }
+
+    private void syncToggles() {
+        presetEntries.forEach(PresetEntry::syncFromDraft);
+        categoryEntries.forEach(CategoryEntry::syncFromDraft);
+    }
 
     private void confirmResetScenes() {
         minecraft.setScreen(new IdleResetConfirmScreen(confirmed -> {
@@ -64,13 +84,19 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     private final class SceneList extends ContainerObjectSelectionList<SceneEntry> {
         private SceneList(Minecraft minecraft, int width, int height, int y) {
             super(minecraft, width, height, y, 24);
-            String previousPool = null;
+            Map<String, List<CinematicPreset>> groups = new LinkedHashMap<>();
             for (CinematicPreset preset : ShotRegistry.active().presets()) {
-                if (!preset.pool().equals(previousPool)) {
-                    previousPool = preset.pool();
-                    addEntry(new CategoryEntry(Component.translatable("idlecinematics.settings.scene_group", titleCase(previousPool))));
+                groups.computeIfAbsent(preset.pool(), ignored -> new ArrayList<>()).add(preset);
+            }
+            for (Map.Entry<String, List<CinematicPreset>> group : groups.entrySet()) {
+                CategoryEntry category = new CategoryEntry(group.getKey(), group.getValue());
+                categoryEntries.add(category);
+                addEntry(category);
+                for (CinematicPreset preset : group.getValue()) {
+                    PresetEntry entry = new PresetEntry(preset);
+                    presetEntries.add(entry);
+                    addEntry(entry);
                 }
-                addEntry(new PresetEntry(preset));
             }
         }
 
@@ -82,28 +108,49 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
 
     private final class CategoryEntry extends SceneEntry {
         private final Component name;
+        private final List<String> presetIds;
+        private final CycleButton<Boolean> toggle;
 
-        private CategoryEntry(Component name) { this.name = name; }
+        private CategoryEntry(String pool, List<CinematicPreset> presets) {
+            name = Component.translatable("idlecinematics.settings.scene_group", titleCase(pool));
+            presetIds = presets.stream().map(preset -> preset.id().toString()).toList();
+            toggle = CycleButton.onOffBuilder(allEnabled()).create(0, 0, 100, 20,
+                    Component.translatable("idlecinematics.settings.scene_group_all"), (button, enabled) -> {
+                        presetIds.forEach(id -> draft.setSceneEnabled(id, enabled));
+                        syncToggles();
+                    });
+        }
+
+        private boolean allEnabled() { return presetIds.stream().allMatch(draft::sceneEnabled); }
+        private void syncFromDraft() { toggle.setValue(allEnabled()); }
 
         @Override public void render(GuiGraphics graphics, int index, int top, int left, int width, int height,
                                      int mouseX, int mouseY, boolean hovering, float partialTick) {
-            graphics.drawCenteredString(font, name, left + width / 2, top + height / 2 - 4, 0xFFFFFFFF);
+            toggle.setPosition(left + width - toggle.getWidth(), top - 2);
+            toggle.render(graphics, mouseX, mouseY, partialTick);
+            graphics.drawString(font, name, left, top + height / 2 - 4, 0xFFFFFFFF);
         }
 
-        @Override public List<? extends GuiEventListener> children() { return List.of(); }
-        @Override public List<? extends NarratableEntry> narratables() { return List.of(); }
+        @Override public List<? extends GuiEventListener> children() { return List.of(toggle); }
+        @Override public List<? extends NarratableEntry> narratables() { return List.of(toggle); }
     }
 
     private final class PresetEntry extends SceneEntry {
         private final Component name;
+        private final String id;
         private final CycleButton<Boolean> toggle;
 
         private PresetEntry(CinematicPreset preset) {
             name = sceneName(preset);
-            String id = preset.id().toString();
+            id = preset.id().toString();
             toggle = CycleButton.onOffBuilder(draft.sceneEnabled(id)).displayOnlyValue()
-                    .create(0, 0, 100, 20, name, (button, enabled) -> draft.setSceneEnabled(id, enabled));
+                    .create(0, 0, 100, 20, name, (button, enabled) -> {
+                        draft.setSceneEnabled(id, enabled);
+                        syncToggles();
+                    });
         }
+
+        private void syncFromDraft() { toggle.setValue(draft.sceneEnabled(id)); }
 
         @Override public void render(GuiGraphics graphics, int index, int top, int left, int width, int height,
                                      int mouseX, int mouseY, boolean hovering, float partialTick) {

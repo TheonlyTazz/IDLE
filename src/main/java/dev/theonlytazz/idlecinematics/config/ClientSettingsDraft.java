@@ -125,6 +125,18 @@ public final class ClientSettingsDraft {
         if (enabled) disabledPresets.remove(id); else disabledPresets.add(id);
     }
 
+    public boolean legacyPoolEnabled(String pool) {
+        return PresetPreferences.isPoolEnabled(pool, playerPool, landscapePool, entityPool, celestialPool);
+    }
+
+    /** Once represented by individual scene choices, legacy pool keys remain enabled for config compatibility. */
+    public void finishLegacyPoolMigration() {
+        playerPool = true;
+        landscapePool = true;
+        entityPool = true;
+        celestialPool = true;
+    }
+
     public void commitTo(java.util.function.Consumer<ClientSettingsDraft> sink) {
         validate();
         sink.accept(this);
