@@ -54,6 +54,8 @@ public final class IdleSettingsScreen extends Screen implements IdleSettingsView
         if (!applied) minecraft.setScreen(parent);
     }
 
+    @Override protected void repositionElements() { rebuildWidgets(); }
+
     @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics, mouseX, mouseY, partialTick);
         renderVanillaPanel(graphics, width, height);

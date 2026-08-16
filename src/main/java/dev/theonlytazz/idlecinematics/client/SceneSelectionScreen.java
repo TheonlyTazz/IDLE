@@ -21,6 +21,7 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     private final Screen parent;
     private final ClientSettingsDraft draft;
     private SceneList sceneList;
+    private Button doneButton;
 
     public SceneSelectionScreen(Screen parent, ClientSettingsDraft draft) {
         super(Component.translatable("idlecinematics.settings.scene_selection"));
@@ -30,12 +31,13 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
 
     @Override protected void init() {
         sceneList = addRenderableWidget(new SceneList(minecraft, width, height - 94, 62));
-        addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
+        doneButton = addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(width / 2 - 100, height - 28, 200, 20).build());
     }
 
     @Override protected void repositionElements() {
         if (sceneList != null) sceneList.updateSizeAndPosition(width, height - 94, 62);
+        if (doneButton != null) doneButton.setPosition(width / 2 - 100, height - 28);
     }
 
     @Override public void onClose() { minecraft.setScreen(parent); }
