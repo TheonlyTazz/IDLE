@@ -35,6 +35,7 @@
   "idlecinematics.settings.scene_selection": "Cinematic Scenes",
   "idlecinematics.settings.scene_group": "%s Scenes",
   "idlecinematics.settings.scene_group_all": "All",
+  "idlecinematics.settings.scene_search": "Search scenes",
   "idlecinematics.settings.section_title": "%s Settings",
   "idlecinematics.settings.reset_all": "Reset All",
   "idlecinematics.settings.reset_to_default": "Reset to Default",
