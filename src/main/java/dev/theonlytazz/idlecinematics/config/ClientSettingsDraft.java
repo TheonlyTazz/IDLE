@@ -78,7 +78,15 @@ public final class ClientSettingsDraft {
     }
 
     public void apply() {
+        commitTo(draft -> draft.writeLiveConfig());
+    }
+
+    public void commitTo(java.util.function.Consumer<ClientSettingsDraft> sink) {
         validate();
+        sink.accept(this);
+    }
+
+    private void writeLiveConfig() {
         ClientConfig.ENABLED.set(enabled); ClientConfig.AFK_TIMEOUT_SECONDS.set(timeoutSeconds);
         ClientConfig.PAN_SPEED.set(panSpeed); ClientConfig.SHOT_DURATION_SECONDS.set(shotDurationSeconds);
         ClientConfig.SHOT_MODE.set(shotMode); ClientConfig.CAMERA_DISTANCE.set(cameraDistance);

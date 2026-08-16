@@ -22,8 +22,8 @@ pan speed, scene pools, transition intensity, overlays, and conservative tempora
 ## Development
 
 Minecraft 26.1.2 requires Java 25. Run `./gradlew build` (or `gradlew.bat build` on Windows). The distributable JAR
-is produced under `build/libs`. The version-neutral state and easing code is isolated in `core` to support a later
-Java 21 / Minecraft 1.21.1 adapter.
+is produced under `build/libs`. Version-neutral state, selection, collision, and damping logic is kept in parity
+with the Java 21 / Minecraft 1.21.1 branch; platform adapters contain mapping-specific code.
 
 ## CurseForge publishing
 

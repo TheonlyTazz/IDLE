@@ -2,6 +2,7 @@ package dev.theonlytazz.idlecinematics.config;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 final class ClientSettingsDraftTest {
     @Test void resetOnlyMutatesDraftDefaults() {
@@ -10,5 +11,15 @@ final class ClientSettingsDraftTest {
         draft.resetDefaults();
         assertTrue(draft.enabled); assertEquals(25, draft.timeoutSeconds); assertFalse(draft.fpsCapEnabled);
         assertEquals(30, draft.fpsCap); assertEquals(55, draft.fov); assertEquals(0.35, draft.masterVolume);
+    }
+
+    @Test void applyValidatesAndCommitsWhileCancelDoesNothing() {
+        ClientSettingsDraft draft = new ClientSettingsDraft(); draft.resetDefaults();
+        draft.timeoutSeconds = 99999;
+        AtomicBoolean committed = new AtomicBoolean();
+        draft.commitTo(value -> { committed.set(true); assertEquals(3600, value.timeoutSeconds); });
+        assertTrue(committed.get());
+        committed.set(false); // A cancelled screen simply discards its draft and never invokes commitTo.
+        assertFalse(committed.get());
     }
 }
