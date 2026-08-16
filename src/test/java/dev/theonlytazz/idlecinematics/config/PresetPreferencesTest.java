@@ -6,6 +6,12 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 final class PresetPreferencesTest {
+    @Test
+    void landmarkPoolRemainsAvailableWhenLegacyScenePoolsAreDisabled() {
+        assertTrue(PresetPreferences.isPoolEnabled("landmark", false, false, false, false));
+        assertFalse(PresetPreferences.isPoolEnabled("landscape", false, false, false, false));
+    }
+
     @Test void disabledIdentifiersRoundTripDeterministically() {
         Set<String> parsed = PresetPreferences.parseDisabled("addon:z, idlecinematics:orbit,addon:z");
         assertEquals(Set.of("addon:z", "idlecinematics:orbit"), parsed);

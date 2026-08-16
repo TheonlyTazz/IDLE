@@ -32,6 +32,18 @@ public final class PresetPreferences {
         return !disabled.contains(id) && (legacyNewMotionsEnabled || !LEGACY_NEW_PRESETS.contains(id));
     }
 
+    /** Landmark scenes have their own per-scene switches and are not owned by a legacy pool toggle. */
+    public static boolean isPoolEnabled(String pool, boolean playerEnabled, boolean landscapeEnabled,
+                                        boolean entityEnabled, boolean celestialEnabled) {
+        return switch (pool) {
+            case "player", "cave" -> playerEnabled;
+            case "entity" -> entityEnabled;
+            case "sunrise", "day", "sunset", "night" -> celestialEnabled;
+            case "landmark" -> true;
+            default -> landscapeEnabled;
+        };
+    }
+
     public static void migrateLegacyChoice(Set<String> disabled, boolean legacyNewMotionsEnabled) {
         if (!legacyNewMotionsEnabled) disabled.addAll(LEGACY_NEW_PRESETS);
     }

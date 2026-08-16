@@ -242,11 +242,9 @@ public final class CinematicController {
     }
 
     private static boolean presetEnabled(CinematicPreset preset) {
-        String pool = preset.pool();
-        boolean poolEnabled = pool.equals("player") || pool.equals("cave") ? ClientConfig.PLAYER_POOL_ENABLED.getAsBoolean()
-                : pool.equals("entity") ? ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean()
-                : pool.equals("sunrise") || pool.equals("day") || pool.equals("sunset") || pool.equals("night")
-                        ? ClientConfig.CELESTIAL_POOL_ENABLED.getAsBoolean() : ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean();
+        boolean poolEnabled = PresetPreferences.isPoolEnabled(preset.pool(),
+                ClientConfig.PLAYER_POOL_ENABLED.getAsBoolean(), ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean(),
+                ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean(), ClientConfig.CELESTIAL_POOL_ENABLED.getAsBoolean());
         return poolEnabled && PresetPreferences.isEnabled(preset.id().toString(),
                 PresetPreferences.parseDisabled(ClientConfig.DISABLED_PRESETS.get()),
                 ClientConfig.ENABLE_NEW_MOTIONS.getAsBoolean());
