@@ -246,7 +246,8 @@ public final class CinematicController {
         return plan.pool() + " / " + plan.presetId() + " | " + effectiveTransition(plan.transition()).type().name().toLowerCase()
                 + " | " + plan.subject().type().name().toLowerCase() + " | "
                 + String.format(java.util.Locale.ROOT, "%.1fm", semanticState.distance()) + (collided ? " | collision" : "")
-                + " | " + (context.enclosed() ? "cave" : context.dimension().name().toLowerCase());
+                + " | " + context.selectedLandmark().map(landmark -> landmark.typeId().toString())
+                        .orElseGet(() -> context.enclosed() ? "cave" : context.dimension().name().toLowerCase());
     }
     public boolean requiresPlayer() { return plan != null && (plan.subject().type() == CinematicSubject.Type.PLAYER || plan.preset().tags().contains("player")); }
     public Optional<UUID> entitySubjectId() { return plan == null || plan.subject().type() != CinematicSubject.Type.ENTITY ? Optional.empty() : plan.subject().entityId(); }

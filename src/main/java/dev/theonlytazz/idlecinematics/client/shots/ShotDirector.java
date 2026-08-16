@@ -60,10 +60,11 @@ public final class ShotDirector {
     private boolean eligible(CinematicPreset preset, CinematicContext context, ClientConfig.ShotMode mode) {
         if (!enabled.test(preset)) return false;
         boolean cave = preset.tags().contains("cave");
-        if (cave != context.enclosed()) return false;
+        if (!preset.tags().contains("landmark") && cave != context.enclosed()) return false;
         if (preset.tags().contains("open_sky") && !context.openSky()) return false;
         if (preset.tags().contains("wide") && (!context.openArea() || context.effectiveRenderDistance() < 8)) return false;
         if (preset.tags().contains("entity") && context.selectedSubject().filter(subject -> subject.type() == CinematicSubject.Type.ENTITY).isEmpty()) return false;
+        if (preset.tags().contains("landmark") && context.selectedLandmark().isEmpty()) return false;
         if (preset.tags().contains("nether") && context.dimension() != CinematicContext.DimensionKind.NETHER) return false;
         if (preset.tags().contains("end") && context.dimension() != CinematicContext.DimensionKind.END) return false;
         if (mode == ClientConfig.ShotMode.CLASSIC) return preset.id().path().equals("orbit") || preset.id().path().equals("wide_orbit");
@@ -81,6 +82,8 @@ public final class ShotDirector {
     }
 
     private String desiredPool(CinematicContext context, ClientConfig.ShotMode mode) {
+        if (context.selectedLandmark().isPresent() && mode != ClientConfig.ShotMode.PLAYER_FOCUSED
+                && mode != ClientConfig.ShotMode.CLASSIC && random.nextDouble() < 0.6) return "landmark";
         if (context.enclosed()) return "cave";
         if (mode == ClientConfig.ShotMode.PLAYER_FOCUSED || mode == ClientConfig.ShotMode.CLASSIC) return "player";
         if (mode == ClientConfig.ShotMode.ENVIRONMENT_FOCUSED) return environmentPool(context);
@@ -91,6 +94,7 @@ public final class ShotDirector {
     }
 
     private String environmentPool(CinematicContext context) {
+        if (context.selectedLandmark().isPresent() && random.nextDouble() < 0.65) return "landmark";
         if (context.dimension() == CinematicContext.DimensionKind.NETHER) return "nether";
         if (context.dimension() == CinematicContext.DimensionKind.END) return "end";
         if (context.selectedSubject().filter(subject -> subject.type() == CinematicSubject.Type.ENTITY).isPresent() && random.nextDouble() < 0.3) return "entity";

@@ -45,6 +45,13 @@ public final class BuiltInPresets {
         presets.add(preset("entity_two_shot", "entity", tags("environment", "entity"), entity(), Motion.TWO_SHOT, TransitionSpec.matchMove(), SafetyPolicy.standard()));
         presets.add(preset("entity_portrait", "entity", tags("environment", "entity", "close"), entity(), Motion.HELICAL_PORTRAIT, TransitionSpec.damped(0.55), SafetyPolicy.standard()));
 
+        presets.add(preset("landmark_orbit", "landmark", tags("environment", "landmark"), landmark(),
+                Motion.LANDMARK_ORBIT, TransitionSpec.continueOrbit(), landmarkSafety()));
+        presets.add(preset("landmark_reveal", "landmark", tags("environment", "landmark"), landmark(),
+                Motion.LANDMARK_REVEAL, TransitionSpec.matchMove(), landmarkSafety()));
+        presets.add(preset("landmark_crane", "landmark", tags("environment", "landmark", "wide"), landmarkWide(),
+                Motion.LANDMARK_CRANE, TransitionSpec.damped(0.8), landmarkSafety()));
+
         presets.add(preset("cave_passage", "cave", tags("player", "cave", "close"), cave(), Motion.EXPEDITION, TransitionSpec.damped(0.45), SafetyPolicy.cave()));
         presets.add(preset("cave_wall_detail", "cave", tags("environment", "cave", "close"), cave(), Motion.ISOMETRIC_HOLD, TransitionSpec.damped(0.4), SafetyPolicy.cave()));
         presets.add(preset("cave_close_portrait", "cave", tags("player", "cave", "close"), cave(), Motion.TIGHT_ORBIT, TransitionSpec.damped(0.35), SafetyPolicy.cave()));
@@ -79,15 +86,19 @@ public final class BuiltInPresets {
     private static ToDoubleFunction<CinematicContext> parallax() { return context -> context.parallaxDirection().isPresent() ? 2.0 : 0.0; }
     private static ToDoubleFunction<CinematicContext> wide() { return context -> context.openSky() && context.openArea() && context.effectiveRenderDistance() >= 8 ? 1.8 : 0.0; }
     private static ToDoubleFunction<CinematicContext> low() { return context -> context.floorDrop() < 2.5 && context.mostOpenDirection().filter(probe -> probe.cameraClearance() >= 4.0).isPresent() ? 1.3 : 0.0; }
+    private static ToDoubleFunction<CinematicContext> landmark() { return context -> context.selectedLandmark().map(value -> value.score()).orElse(0.0); }
+    private static ToDoubleFunction<CinematicContext> landmarkWide() { return context -> context.selectedLandmark().filter(value -> value.radius() >= 3.0).map(value -> value.score() * 0.9).orElse(0.0); }
     private static ToDoubleFunction<CinematicContext> dimension(CinematicContext.DimensionKind kind) { return context -> context.dimension() == kind ? 2.3 : 0.0; }
     private static Set<String> tags(String... tags) { return Set.of(tags); }
     private static SafetyPolicy dimensionSafety(double maximum) { return new SafetyPolicy(1.1, maximum, -76, 76, 0.22, SafetyPolicy.FluidPolicy.REJECT, 0.12); }
+    private static SafetyPolicy landmarkSafety() { return new SafetyPolicy(1.5, 18.0, -70, 76, 0.28, SafetyPolicy.FluidPolicy.ALLOW_WATER, 0.2); }
 
     private record BuiltIn(NamespacedId id, String pool, Set<String> tags, ToDoubleFunction<CinematicContext> scorer,
                            Motion motion, TransitionSpec transition, SafetyPolicy safety) implements CinematicPreset {
         @Override public double contextScore(CinematicContext context) { return Math.max(0.0, scorer.applyAsDouble(context)); }
         @Override public CinematicSubject selectSubject(CinematicContext context, RandomGenerator random) {
             if (tags.contains("entity")) return context.selectedSubject().orElse(context.player());
+            if (tags.contains("landmark")) return context.selectedLandmark().map(dev.theonlytazz.idlecinematics.api.CinematicLandmark::subject).orElse(context.player());
             if (tags.contains("celestial")) return context.celestialTarget().orElse(context.player());
             if (tags.contains("environment")) return context.terrainTarget().orElse(context.player());
             return context.player();
@@ -100,7 +111,8 @@ public final class BuiltInPresets {
 
     private enum Motion {
         ORBIT, TIGHT_ORBIT, CROWN_ORBIT, BREATHING_ORBIT, HELICAL_PORTRAIT, ISOMETRIC_HOLD,
-        HERO_SWEEP, FIGURE_EIGHT, CRANE, PARALLAX, EXPEDITION, TERRAIN_SCOUT, TWO_SHOT, CELESTIAL;
+        HERO_SWEEP, FIGURE_EIGHT, CRANE, PARALLAX, EXPEDITION, TERRAIN_SCOUT, TWO_SHOT, CELESTIAL,
+        LANDMARK_ORBIT, LANDMARK_REVEAL, LANDMARK_CRANE;
 
         CameraMotion create(CinematicContext context, CinematicSubject subject, RandomGenerator random) {
             double seedAngle = random.nextDouble(360.0);
@@ -129,6 +141,9 @@ public final class BuiltInPresets {
                     case TERRAIN_SCOUT -> { angle = directionAngle(context) + 155.0 + p * 18.0; distance = 7.0; elevation = 22.0; lateral = (p - 0.5) * 2.0; }
                     case TWO_SHOT -> { angle = seedAngle + p * 18.0; distance = Math.max(4.5, player.distanceTo(subjectFocus) * 0.75 + 3.0); elevation = 14.0; }
                     case CELESTIAL -> { angle = directionAngle(context) + 180.0 + p * 8.0; distance = 7.0; elevation = 28.0; }
+                    case LANDMARK_ORBIT -> { angle = seedAngle + elapsed * 7.0; distance = landmarkDistance(subject, 1.25); elevation = 18.0; yawMode = CinematicRigState.YawMode.FORWARD_ONLY; }
+                    case LANDMARK_REVEAL -> { angle = seedAngle + p * 32.0; distance = landmarkDistance(subject, 1.55) - p * 1.25; elevation = 9.0 + p * 13.0; lateral = (p - 0.5) * 1.5; }
+                    case LANDMARK_CRANE -> { angle = seedAngle + p * 18.0; distance = landmarkDistance(subject, 1.7); elevation = 4.0 + p * 38.0; vertical = p * Math.min(3.0, subject.size() * 0.25); }
                     default -> throw new IllegalStateException("Unknown motion " + this);
                 }
                 Vec3 anchor = this == TWO_SHOT ? player.lerp(subjectFocus, 0.5) : (tagsEnvironment(this) ? player : subjectFocus);
@@ -139,6 +154,9 @@ public final class BuiltInPresets {
         }
 
         private static boolean tagsEnvironment(Motion motion) { return motion == PARALLAX || motion == TERRAIN_SCOUT || motion == CELESTIAL; }
+        private static double landmarkDistance(CinematicSubject subject, double scale) {
+            return Math.max(4.5, Math.min(16.0, subject.size() * 0.5 * scale + 3.0));
+        }
         private static double directionAngle(CinematicContext context) {
             Vec3 direction = context.mostOpenDirection().map(CinematicContext.DirectionalProbe::direction).orElse(new Vec3(1, 0, 0));
             return Math.toDegrees(Math.atan2(direction.z, direction.x));

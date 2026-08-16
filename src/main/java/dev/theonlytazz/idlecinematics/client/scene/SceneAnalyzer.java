@@ -3,6 +3,8 @@ package dev.theonlytazz.idlecinematics.client.scene;
 import dev.theonlytazz.idlecinematics.api.CinematicContext;
 import dev.theonlytazz.idlecinematics.api.CinematicSubject;
 import dev.theonlytazz.idlecinematics.client.shots.SubjectSelector;
+import dev.theonlytazz.idlecinematics.api.CinematicLandmark;
+import dev.theonlytazz.idlecinematics.client.landmark.LandmarkScanner;
 import dev.theonlytazz.idlecinematics.platform.ClientWorldAdapter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -22,6 +24,7 @@ public final class SceneAnalyzer {
     private static final double ENTITY_RADIUS = 48.0;
     private static final Vec3[] DIRECTIONS = createDirections();
     private final SubjectSelector subjectSelector = new SubjectSelector();
+    private final LandmarkScanner landmarkScanner = new LandmarkScanner();
 
     public CinematicContext analyze(Minecraft minecraft, boolean includeEntities, RandomGenerator random) {
         if (minecraft.player == null || minecraft.level == null) throw new IllegalStateException("No usable client world");
@@ -74,9 +77,11 @@ public final class SceneAnalyzer {
         CinematicContext.FluidState fluid = minecraft.player.isInLava() ? CinematicContext.FluidState.LAVA
                 : minecraft.player.isInWater() ? CinematicContext.FluidState.WATER : CinematicContext.FluidState.DRY;
         int light = minecraft.level.getMaxLocalRawBrightness(BlockPos.containing(focus));
+        List<CinematicLandmark> landmarks = landmarkScanner.scan(minecraft.level, focus);
+        Optional<CinematicLandmark> selectedLandmark = landmarks.stream().findFirst();
         return new CinematicContext(player, dimension, dayPhase, enclosed, openSky, weather, fluid, light,
                 renderDistance, ceiling.distance(), floor.distance(), directions, subjects, selectedEntity,
-                Optional.of(terrain), openSky ? Optional.of(celestial) : Optional.empty());
+                Optional.of(terrain), openSky ? Optional.of(celestial) : Optional.empty(), landmarks, selectedLandmark);
     }
 
     public Optional<CinematicSubject> updateEntitySubject(Minecraft minecraft, CinematicSubject subject) {

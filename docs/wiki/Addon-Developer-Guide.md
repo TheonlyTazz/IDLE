@@ -7,7 +7,7 @@ directory and use it as a compile-only dependency:
 
 ```groovy
 dependencies {
-    compileOnly files("libs/idlecinematics-neoforge-26.1.2-1.1.0.jar")
+    compileOnly files("libs/idlecinematics-neoforge-26.1.2-1.2.0.jar")
 }
 ```
 
@@ -18,12 +18,15 @@ Use the `1.21.1` JAR when compiling that branch. Declare IDLE as a required clie
 [[dependencies.my_idle_addon]]
 modId="idlecinematics"
 type="required"
-versionRange="[1.1.0,2.0.0)"
+versionRange="[1.2.0,2.0.0)"
 ordering="AFTER"
 side="CLIENT"
 ```
 
 ## 2. Register presets
+
+For block-entity points of interest, start with [Landmark Compatibility](Landmark-Compatibility.md). A landmark
+definition receives IDLE's generic orbit, reveal, and crane scenes without requiring a custom preset.
 
 The simplest and earliest route is a direct call from the add-on mod constructor. Construction order does not
 matter: calling this method initializes IDLE's built-ins if necessary and leaves registration open.
