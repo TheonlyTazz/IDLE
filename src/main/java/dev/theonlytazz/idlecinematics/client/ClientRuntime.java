@@ -65,7 +65,15 @@ public final class ClientRuntime {
         boolean chatOpen = minecraft.screen instanceof ChatScreen;
         boolean usable = minecraft.player != null && minecraft.level != null
                 && (minecraft.screen == null || chatOpen) && !minecraft.isPaused();
-        if (ACTIVITY.tick(usable, ClientConfig.ENABLED.getAsBoolean(), ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt() * 20)) {
+        boolean wasCinematic = ACTIVITY.isCinematic();
+        boolean activated = ACTIVITY.tick(
+                usable, ClientConfig.ENABLED.getAsBoolean(), ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt() * 20);
+        if (wasCinematic && !ACTIVITY.isCinematic()) {
+            // ActivityState resets itself when pausing, disconnecting, or opening
+            // another screen, so mirror that transition into controller cleanup.
+            stop();
+        }
+        if (activated) {
             if (chatOpen) minecraft.setScreen(null);
             CAMERA.start(minecraft);
         }
@@ -139,6 +147,7 @@ public final class ClientRuntime {
         CameraAccessor access = (CameraAccessor) camera;
         access.idlecinematics$setPosition(pose.position());
         access.idlecinematics$setRotation(pose.yaw(), pose.pitch(), pose.roll());
+        access.idlecinematics$setDetached(true);
     }
 
     public static boolean isCinematicActive() {

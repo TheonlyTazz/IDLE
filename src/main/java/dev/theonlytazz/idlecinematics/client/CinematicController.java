@@ -5,7 +5,6 @@ import dev.theonlytazz.idlecinematics.core.SmoothMath;
 import dev.theonlytazz.idlecinematics.client.camera.*;
 import dev.theonlytazz.idlecinematics.client.scene.*;
 import dev.theonlytazz.idlecinematics.client.shots.*;
-import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
@@ -29,15 +28,8 @@ public final class CinematicController {
     private double phase;
     private int shotTick;
     private int blockedTicks;
-    private CameraType restorePerspective;
-    private Boolean restoreSmartCull;
 
     public void start(Minecraft minecraft) {
-        if (restorePerspective == null) restorePerspective = minecraft.options.getCameraType();
-        if (restoreSmartCull == null) restoreSmartCull = minecraft.smartCull;
-        minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-        minecraft.smartCull = false;
-        minecraft.levelRenderer.needsUpdate();
         phase = ThreadLocalRandom.current().nextDouble(Math.PI * 2.0);
         current = null;
         director.reset();
@@ -52,20 +44,10 @@ public final class CinematicController {
         transitionFrom = null;
         plan = null;
         director.reset();
-        if (restorePerspective != null) {
-            Minecraft.getInstance().options.setCameraType(restorePerspective);
-            restorePerspective = null;
-        }
-        if (restoreSmartCull != null) {
-            Minecraft.getInstance().smartCull = restoreSmartCull;
-            restoreSmartCull = null;
-        }
-        Minecraft.getInstance().levelRenderer.needsUpdate();
     }
 
     public void tick(Minecraft minecraft) {
         if (minecraft.player == null || minecraft.level == null || plan == null) return;
-        minecraft.smartCull = false;
         previous = current;
         if (shotTick++ >= plan.durationTicks()) chooseShot(minecraft);
 
@@ -93,9 +75,11 @@ public final class CinematicController {
         blockedTicks = 0;
         SceneContext scene = sceneAnalyzer.analyze(minecraft, ClientConfig.INCLUDE_ENTITIES.getAsBoolean());
         plan = director.next(scene, ClientConfig.SHOT_MODE.get(), ClientConfig.SHOT_DURATION_SECONDS.getAsInt() * 20);
-        LOGGER.info("Selected cinematic preset: {} / {} [dimension={}, phase={}, enclosed={}, openDirections={}, entityTarget={}]",
-                plan.pool().name().toLowerCase(), plan.presetId(), scene.dimension(), scene.dayPhase(), scene.enclosed(),
-                scene.openDirections(), scene.nearbyEntityFocus().isPresent());
+        if (ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean()) {
+            LOGGER.info("Selected cinematic preset: {} / {} [dimension={}, phase={}, enclosed={}, openDirections={}, entityTarget={}]",
+                    plan.pool().name().toLowerCase(), plan.presetId(), scene.dimension(), scene.dayPhase(), scene.enclosed(),
+                    scene.openDirections(), scene.nearbyEntityFocus().isPresent());
+        }
         phase += ThreadLocalRandom.current().nextDouble(0.35, 1.1);
     }
 
