@@ -128,7 +128,11 @@ public final class CinematicController {
     }
 
     private void chooseShot(Minecraft minecraft) {
-        context = sceneAnalyzer.analyze(minecraft, ClientConfig.INCLUDE_ENTITIES.getAsBoolean(), random);
+        boolean includeEntities = ClientConfig.INCLUDE_ENTITIES.getAsBoolean()
+                && ShotRegistry.active().presets().stream()
+                        .anyMatch(preset -> (preset.pool().equals("entity") || preset.tags().contains("entity"))
+                                && presetEnabled(preset));
+        context = sceneAnalyzer.analyze(minecraft, includeEntities, random);
         plan = BoundedShotSelector.choose(MAX_RESELECTION_ATTEMPTS,
                 () -> director.next(context, ClientConfig.SHOT_MODE.get(), ClientConfig.SHOT_DURATION_SECONDS.getAsInt() * 20),
                 candidate -> validPlan(minecraft, candidate), () -> guaranteedFallback(context));
