@@ -1,5 +1,8 @@
 # IDLE Wiki
 
+Pack developers can extend IDLE through the [Java add-on API](Addon-Developer-Guide.md) or the
+[KubeJS integration](KubeJS-Integration.md).
+
 IDLE 1.1 exposes a versioned Java API for adding cinematic scenes without mixins, camera mutation, or JSON files.
 An add-on supplies semantic camera compositions; IDLE remains responsible for selection, damping, interpolation,
 collision, subject retention, detached-camera rendering, and immediate cleanup.
@@ -11,6 +14,7 @@ collision, subject retention, detached-camera rendering, and immediate cleanup.
 - [Preset API Reference](Preset-API-Reference.md) — every API type, pool, tag, transition, and safety field.
 - [Scene Cookbook](Scene-Cookbook.md) — player, terrain, entity, cave, and celestial recipes.
 - [Scene Settings](Scene-Settings.md) — enable built-in and addon scenes individually.
+- [KubeJS Integration](KubeJS-Integration.md) — pack-defined landmarks and safe scene templates.
 - [Versioning and Compatibility](Versioning-and-Compatibility.md) — API version checks and dual-version support.
 
 ## Design contract

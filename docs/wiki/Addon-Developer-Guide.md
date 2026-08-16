@@ -27,6 +27,8 @@ side="CLIENT"
 
 For block-entity points of interest, start with [Landmark Compatibility](Landmark-Compatibility.md). A landmark
 definition receives IDLE's generic orbit, reveal, and crane scenes without requiring a custom preset.
+Modpack authors can declare the same landmarks and safe parameterized scenes without Java through the
+[KubeJS Integration](KubeJS-Integration.md).
 
 The simplest and earliest route is a direct call from the add-on mod constructor. Construction order does not
 matter: calling this method initializes IDLE's built-ins if necessary and leaves registration open.
