@@ -57,6 +57,10 @@ public final class IdlePresetEvents {
 Do not use both routes for the same identifier. Duplicate identifiers fail with an `IllegalArgumentException`, and
 registration after client setup fails with an `IllegalStateException`.
 
+Every successfully registered preset automatically appears in IDLE's **Choose individual scenes** submenu. The
+display name is derived from the identifier path, and the add-on namespace is shown in parentheses. Add-ons do not
+need to register settings widgets or translations for this list.
+
 ## 3. Implement a preset
 
 ```java
