@@ -44,4 +44,15 @@ final class CameraEngineTest {
         assertEquals(4.8, result.distance(), 1.0e-9);
         assertEquals(4.8, result.position().x, 1.0e-9);
     }
+
+    @Test void landmarkClearanceSkipsTheSolidSubjectVolume() {
+        CameraVolumeCollision.Result result = CameraVolumeCollision.resolve(Vec3.ZERO, new Vec3(10, 0, 0),
+                0.25, 0.2, 2.0, (start, end) -> {
+                    assertTrue(start.x >= 2.0);
+                    return start.y > 0 ? OptionalDouble.of(0.5) : OptionalDouble.empty();
+                });
+        assertTrue(result.collided());
+        assertEquals(5.8, result.distance(), 1.0e-9);
+        assertEquals(5.8, result.position().x, 1.0e-9);
+    }
 }
