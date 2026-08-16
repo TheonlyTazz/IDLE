@@ -4,7 +4,7 @@ IDLE's configuration uses the same full-screen hierarchy as Minecraft's vanilla 
 
 1. The main **Idle Cinematics Settings** screen is a two-column category hub.
 2. Selecting General, Camera, Scenes, HUD, Debug, or Profiles opens that category's full-screen panel.
-3. **Reset This Page** restores only the open category's defaults in the draft.
+3. **Reset to Default** asks for confirmation, then restores only the open category's defaults in the draft.
 4. **Done** in a category returns to the hub without saving yet.
 5. **Done** on the hub validates, saves, and applies the complete settings draft.
 
