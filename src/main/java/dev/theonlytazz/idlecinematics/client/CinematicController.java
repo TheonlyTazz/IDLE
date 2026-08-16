@@ -75,9 +75,11 @@ public final class CinematicController {
         blockedTicks = 0;
         SceneContext scene = sceneAnalyzer.analyze(minecraft, ClientConfig.INCLUDE_ENTITIES.getAsBoolean());
         plan = director.next(scene, ClientConfig.SHOT_MODE.get(), ClientConfig.SHOT_DURATION_SECONDS.getAsInt() * 20);
-        LOGGER.info("Selected cinematic preset: {} / {} [dimension={}, phase={}, enclosed={}, openDirections={}, entityTarget={}]",
-                plan.pool().name().toLowerCase(), plan.presetId(), scene.dimension(), scene.dayPhase(), scene.enclosed(),
-                scene.openDirections(), scene.nearbyEntityFocus().isPresent());
+        if (ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean()) {
+            LOGGER.info("Selected cinematic preset: {} / {} [dimension={}, phase={}, enclosed={}, openDirections={}, entityTarget={}]",
+                    plan.pool().name().toLowerCase(), plan.presetId(), scene.dimension(), scene.dayPhase(), scene.enclosed(),
+                    scene.openDirections(), scene.nearbyEntityFocus().isPresent());
+        }
         phase += ThreadLocalRandom.current().nextDouble(0.35, 1.1);
     }
 
