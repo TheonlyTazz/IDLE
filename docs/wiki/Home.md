@@ -3,7 +3,8 @@
 Pack developers can extend IDLE through the [Java add-on API](Addon-Developer-Guide.md) or the
 [KubeJS integration](KubeJS-Integration.md).
 
-IDLE 1.1 exposes a versioned Java API for adding cinematic scenes without mixins, camera mutation, or JSON files.
+IDLE 1.2 exposes versioned Java APIs for adding cinematic scenes and landmarks without mixins, camera mutation,
+or JSON files, plus an optional KubeJS integration for modpack-defined landmarks.
 An add-on supplies semantic camera compositions; IDLE remains responsible for selection, damping, interpolation,
 collision, subject retention, detached-camera rendering, and immediate cleanup.
 
