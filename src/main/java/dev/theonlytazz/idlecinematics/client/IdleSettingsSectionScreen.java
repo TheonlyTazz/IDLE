@@ -52,10 +52,6 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
                 addRenderableWidget(Button.builder(label("configure_scenes"),
                         button -> minecraft.setScreen(new SceneSelectionScreen(this, draft)))
                         .bounds(right, y, 150, 20).build());
-                toggle(left, y + 24, "player_pool", draft.playerPool, value -> draft.playerPool = value);
-                toggle(right, y + 24, "landscape_pool", draft.landscapePool, value -> draft.landscapePool = value);
-                toggle(left, y + 48, "entity_pool", draft.entityPool, value -> draft.entityPool = value);
-                toggle(right, y + 48, "celestial_pool", draft.celestialPool, value -> draft.celestialPool = value);
             }
             case HUD -> {
                 toggle(left, y, "hide_hud", draft.hideHud, value -> draft.hideHud = value);
