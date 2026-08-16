@@ -4,14 +4,14 @@ Open **Settings → Scenes → Choose individual scenes...** to see every cinema
 with IDLE. This includes IDLE's built-in scenes and scenes supplied by installed add-ons.
 
 Each row independently enables or disables one preset. Add-on rows include their mod namespace in parentheses so
-similarly named scenes remain distinguishable. The list is paginated to fit Minecraft's GUI scale; use **Prev** and
-**Next** to move between pages and **Done** to return to the main settings screen.
+similarly named scenes remain distinguishable. Scenes are grouped by pool in a vanilla-style scrolling list. Use
+the mouse wheel or scrollbar to browse and **Done** to return to the Scenes category.
 
 Scene changes use the same draft as the rest of IDLE's settings:
 
-- **Apply** on the main screen saves every change.
-- **Cancel** or Escape on the main screen discards every change, including scene toggles.
-- **Reset** enables every registered scene in the draft.
+- **Done** on the category hub saves every change.
+- Escape from the category hub discards every change, including scene toggles.
+- **Reset All** restores documented defaults, including enabling every registered scene, in the draft.
 
 The four scene-pool switches remain useful as broad filters. For example, disabling **Entity scenes** skips the
 entire entity pool even if individual entity presets are enabled. **Feature nearby mobs** controls whether living

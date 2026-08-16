@@ -1,4 +1,4 @@
-# IDLE Add-on Developer Wiki
+# IDLE Wiki
 
 IDLE 1.3 exposes a versioned Java API for adding cinematic scenes without mixins, camera mutation, or JSON files.
 An add-on supplies semantic camera compositions; IDLE remains responsible for selection, damping, interpolation,
@@ -6,6 +6,7 @@ collision, subject retention, detached-camera rendering, and immediate cleanup.
 
 ## Start here
 
+- [Settings](Settings.md) — configuration layout, saving, cancellation, and reset behavior.
 - [Add-on Developer Guide](Addon-Developer-Guide.md) — dependency setup, registration, and a complete first preset.
 - [Preset API Reference](Preset-API-Reference.md) — every API type, pool, tag, transition, and safety field.
 - [Scene Cookbook](Scene-Cookbook.md) — player, terrain, entity, cave, and celestial recipes.
