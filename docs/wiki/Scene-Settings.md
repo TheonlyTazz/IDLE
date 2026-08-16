@@ -5,7 +5,8 @@ with IDLE. This includes IDLE's built-in scenes and scenes supplied by installed
 
 Each row independently enables or disables one preset. Add-on rows include their mod namespace in parentheses so
 similarly named scenes remain distinguishable. Scenes are grouped by pool in a vanilla-style scrolling list. Use
-the mouse wheel or scrollbar to browse and **Done** to return to the Scenes category.
+the mouse wheel or scrollbar to browse. **Reset Scenes** enables every individual preset without changing the
+parent page's scene-pool choices, and **Done** returns to the Scenes category.
 
 Scene changes use the same draft as the rest of IDLE's settings:
 

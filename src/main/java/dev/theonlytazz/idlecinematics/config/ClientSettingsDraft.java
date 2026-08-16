@@ -72,12 +72,41 @@ public final class ClientSettingsDraft {
     }
 
     public void resetDefaults() {
-        enabled = true; timeoutSeconds = 25; panSpeed = 1.0; shotDurationSeconds = 9;
-        shotMode = ClientConfig.ShotMode.DYNAMIC; cameraDistance = 1.0; smoothTransitions = true;
-        transitionIntensity = 1.0; hideHud = true; includeEntities = true; debug = false;
+        resetGeneralDefaults();
+        resetCameraDefaults();
+        resetSceneDefaults();
+        resetHudDefaults();
+        resetDebugDefaults();
+        resetProfileDefaults();
+    }
+
+    public void resetGeneralDefaults() {
+        enabled = true; timeoutSeconds = 25;
         countdownEnabled = true; countdownSeconds = 3; exitOnFocusRegain = true;
+    }
+
+    public void resetCameraDefaults() {
+        panSpeed = 1.0; shotDurationSeconds = 9; shotMode = ClientConfig.ShotMode.DYNAMIC;
+        cameraDistance = 1.0; smoothTransitions = true; transitionIntensity = 1.0;
+    }
+
+    public void resetSceneDefaults() {
+        includeEntities = true; resetPresetDefaults();
+        playerPool = true; landscapePool = true; entityPool = true; celestialPool = true;
+    }
+
+    public void resetPresetDefaults() {
+        newMotions = true; disabledPresets.clear();
+    }
+
+    public void resetHudDefaults() {
+        hideHud = true;
         showTimerTitle = true; showTimer = true; hudScale = 1.0; hudAnchor = ClientConfig.HudAnchor.TOP_RIGHT;
-        newMotions = true; disabledPresets.clear(); playerPool = true; landscapePool = true; entityPool = true; celestialPool = true;
+    }
+
+    public void resetDebugDefaults() { debug = false; }
+
+    public void resetProfileDefaults() {
         fpsCapEnabled = false; fpsCap = 30; fovEnabled = false; fov = 55;
         audioEnabled = false; masterVolume = 0.35;
     }

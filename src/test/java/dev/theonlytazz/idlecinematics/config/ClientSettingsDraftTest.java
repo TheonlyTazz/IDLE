@@ -35,4 +35,32 @@ final class ClientSettingsDraftTest {
         assertFalse(draft.sceneEnabled("idlecinematics:entity_portrait"));
         assertTrue(draft.sceneEnabled("example_addon:custom_scene"));
     }
+
+    @Test void categoryResetDoesNotChangeOtherPages() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.resetDefaults();
+        draft.enabled = false;
+        draft.panSpeed = 3.5;
+        draft.cameraDistance = 1.6;
+        draft.hideHud = false;
+
+        draft.resetCameraDefaults();
+
+        assertFalse(draft.enabled);
+        assertEquals(1.0, draft.panSpeed);
+        assertEquals(1.0, draft.cameraDistance);
+        assertFalse(draft.hideHud);
+    }
+
+    @Test void presetResetDoesNotChangeScenePoolChoices() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.resetDefaults();
+        draft.playerPool = false;
+        draft.setSceneEnabled("idlecinematics:orbit", false);
+
+        draft.resetPresetDefaults();
+
+        assertTrue(draft.sceneEnabled("idlecinematics:orbit"));
+        assertFalse(draft.playerPool);
+    }
 }
