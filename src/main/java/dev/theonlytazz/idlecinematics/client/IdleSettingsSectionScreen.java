@@ -47,12 +47,7 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
                 toggle(left, y + 48, "smoothing", draft.smoothTransitions, value -> draft.smoothTransitions = value);
                 slider(right, y + 48, "transition", draft.transitionIntensity, 0, 2, 0.1, value -> draft.transitionIntensity = value, "x");
             }
-            case SCENES -> {
-                toggle(left, y, "entities", draft.includeEntities, value -> draft.includeEntities = value);
-                addRenderableWidget(Button.builder(label("configure_scenes"),
-                        button -> minecraft.setScreen(new SceneSelectionScreen(this, draft)))
-                        .bounds(right, y, 150, 20).build());
-            }
+            case SCENES -> { /* Opened directly by IdleSettingsScreen. */ }
             case HUD -> {
                 toggle(left, y, "hide_hud", draft.hideHud, value -> draft.hideHud = value);
                 toggle(right, y, "timer_title", draft.showTimerTitle, value -> draft.showTimerTitle = value);

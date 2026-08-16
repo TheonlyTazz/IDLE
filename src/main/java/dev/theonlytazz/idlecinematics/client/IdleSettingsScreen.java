@@ -40,7 +40,9 @@ public final class IdleSettingsScreen extends Screen implements IdleSettingsView
     }
 
     private void openSection(SettingsSection section) {
-        minecraft.setScreen(new IdleSettingsSectionScreen(this, draft, section));
+        minecraft.setScreen(section == SettingsSection.SCENES
+                ? new SceneSelectionScreen(this, draft)
+                : new IdleSettingsSectionScreen(this, draft, section));
     }
 
     private void confirmResetAll() {

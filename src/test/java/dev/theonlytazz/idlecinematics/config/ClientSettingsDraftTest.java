@@ -81,4 +81,16 @@ final class ClientSettingsDraftTest {
         assertTrue(draft.playerPool);
         assertFalse(draft.sceneEnabled("idlecinematics:orbit"));
     }
+
+    @Test void sceneResetRestoresLegacyEntityAnalysisForIndividualEntityScenes() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.resetDefaults();
+        draft.includeEntities = false;
+        draft.setSceneEnabled("idlecinematics:entity_portrait", false);
+
+        draft.resetSceneDefaults();
+
+        assertTrue(draft.includeEntities);
+        assertTrue(draft.sceneEnabled("idlecinematics:entity_portrait"));
+    }
 }

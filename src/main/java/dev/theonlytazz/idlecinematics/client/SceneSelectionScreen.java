@@ -74,9 +74,14 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     @Override public void onClose() { minecraft.setScreen(parent); }
 
     private void migrateLegacyPoolChoices() {
+        boolean legacyEntitiesEnabled = draft.includeEntities;
         for (CinematicPreset preset : ShotRegistry.active().presets()) {
             if (!draft.legacyPoolEnabled(preset.pool())) draft.setSceneEnabled(preset.id().toString(), false);
+            if (!legacyEntitiesEnabled && (preset.pool().equals("entity") || preset.tags().contains("entity"))) {
+                draft.setSceneEnabled(preset.id().toString(), false);
+            }
         }
+        draft.includeEntities = true;
         draft.finishLegacyPoolMigration();
     }
 
@@ -87,7 +92,7 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
 
     private void confirmResetScenes() {
         minecraft.setScreen(new IdleResetConfirmScreen(confirmed -> {
-            if (confirmed) draft.resetPresetDefaults();
+            if (confirmed) draft.resetSceneDefaults();
             minecraft.setScreen(this);
         }, Component.translatable("idlecinematics.settings.reset_section_confirm_title", title),
                 Component.translatable("idlecinematics.settings.reset_section_confirm_message")));
