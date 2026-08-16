@@ -7,7 +7,7 @@ directory and use it as a compile-only dependency:
 
 ```groovy
 dependencies {
-    compileOnly files("libs/idlecinematics-neoforge-26.1.2-1.3.0.jar")
+    compileOnly files("libs/idlecinematics-neoforge-26.1.2-1.1.0.jar")
 }
 ```
 
@@ -18,7 +18,7 @@ Use the `1.21.1` JAR when compiling that branch. Declare IDLE as a required clie
 [[dependencies.my_idle_addon]]
 modId="idlecinematics"
 type="required"
-versionRange="[1.3.0,2.0.0)"
+versionRange="[1.1.0,2.0.0)"
 ordering="AFTER"
 side="CLIENT"
 ```
