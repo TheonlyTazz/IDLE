@@ -76,7 +76,7 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
             }
         }
         int footerY = height - 28;
-        addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset_section"), button -> resetSection())
+        addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset_to_default"), button -> confirmResetSection())
                 .bounds(width / 2 - 155, footerY, 150, 20).build());
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(width / 2 + 5, footerY, 150, 20).build());
@@ -92,6 +92,14 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
 
     private static Component label(String key) { return Component.translatable("idlecinematics.settings." + key); }
 
+    private void confirmResetSection() {
+        minecraft.setScreen(new IdleResetConfirmScreen(confirmed -> {
+            if (confirmed) resetSection();
+            minecraft.setScreen(this);
+        }, Component.translatable("idlecinematics.settings.reset_section_confirm_title", section.title()),
+                Component.translatable("idlecinematics.settings.reset_section_confirm_message")));
+    }
+
     private void resetSection() {
         switch (section) {
             case GENERAL -> draft.resetGeneralDefaults();
@@ -101,7 +109,6 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
             case DEBUG -> draft.resetDebugDefaults();
             case PROFILES -> draft.resetProfileDefaults();
         }
-        rebuildWidgets();
     }
 
     @Override public void onClose() { minecraft.setScreen(parent); }

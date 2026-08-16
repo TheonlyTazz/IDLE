@@ -33,10 +33,8 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     @Override protected void init() {
         sceneList = addRenderableWidget(new SceneList(minecraft, width, height - 94, 62));
         int footerY = height - 28;
-        resetButton = addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset_scenes"), button -> {
-            draft.resetPresetDefaults();
-            rebuildWidgets();
-        }).bounds(width / 2 - 155, footerY, 150, 20).build());
+        resetButton = addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset_to_default"),
+                button -> confirmResetScenes()).bounds(width / 2 - 155, footerY, 150, 20).build());
         doneButton = addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
                 .bounds(width / 2 + 5, footerY, 150, 20).build());
     }
@@ -48,6 +46,14 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
     }
 
     @Override public void onClose() { minecraft.setScreen(parent); }
+
+    private void confirmResetScenes() {
+        minecraft.setScreen(new IdleResetConfirmScreen(confirmed -> {
+            if (confirmed) draft.resetPresetDefaults();
+            minecraft.setScreen(this);
+        }, Component.translatable("idlecinematics.settings.reset_section_confirm_title", title),
+                Component.translatable("idlecinematics.settings.reset_section_confirm_message")));
+    }
 
     @Override public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics, mouseX, mouseY, partialTick);
