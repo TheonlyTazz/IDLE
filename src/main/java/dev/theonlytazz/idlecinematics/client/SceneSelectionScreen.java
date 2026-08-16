@@ -116,7 +116,7 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
             categoryToggles.clear();
             Map<String, List<CinematicPreset>> groups = new LinkedHashMap<>();
             for (CinematicPreset preset : ShotRegistry.active().presets()) {
-                groups.computeIfAbsent(preset.pool(), ignored -> new ArrayList<>()).add(preset);
+                groups.computeIfAbsent(sceneGroup(preset.pool()), ignored -> new ArrayList<>()).add(preset);
             }
             for (Map.Entry<String, List<CinematicPreset>> group : groups.entrySet()) {
                 List<CinematicPreset> visible = group.getValue().stream()
@@ -224,6 +224,13 @@ public final class SceneSelectionScreen extends Screen implements IdleSettingsVi
         return preset.id().toString().toLowerCase(Locale.ROOT).contains(normalized)
                 || sceneName(preset).getString().toLowerCase(Locale.ROOT).contains(normalized)
                 || titleCase(pool).toLowerCase(Locale.ROOT).contains(normalized);
+    }
+
+    private static String sceneGroup(String pool) {
+        return switch (pool) {
+            case "sunrise", "day", "sunset", "night" -> "celestial";
+            default -> pool;
+        };
     }
 
     private static String titleCase(String value) {
