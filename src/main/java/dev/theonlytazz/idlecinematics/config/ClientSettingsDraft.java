@@ -1,0 +1,108 @@
+package dev.theonlytazz.idlecinematics.config;
+
+/** Transactional settings model. Widgets never mutate live config before Apply. */
+public final class ClientSettingsDraft {
+    public boolean enabled;
+    public int timeoutSeconds;
+    public double panSpeed;
+    public int shotDurationSeconds;
+    public ClientConfig.ShotMode shotMode;
+    public double cameraDistance;
+    public boolean smoothTransitions;
+    public double transitionIntensity;
+    public boolean hideHud;
+    public boolean includeEntities;
+    public boolean debug;
+    public boolean countdownEnabled;
+    public int countdownSeconds;
+    public boolean exitOnFocusRegain;
+    public boolean showTimerTitle;
+    public boolean showTimer;
+    public double hudScale;
+    public ClientConfig.HudAnchor hudAnchor;
+    public boolean newMotions;
+    public boolean playerPool;
+    public boolean landscapePool;
+    public boolean entityPool;
+    public boolean celestialPool;
+    public boolean fpsCapEnabled;
+    public int fpsCap;
+    public boolean fovEnabled;
+    public int fov;
+    public boolean audioEnabled;
+    public double masterVolume;
+
+    public static ClientSettingsDraft snapshot() {
+        ClientSettingsDraft draft = new ClientSettingsDraft();
+        draft.enabled = ClientConfig.ENABLED.getAsBoolean();
+        draft.timeoutSeconds = ClientConfig.AFK_TIMEOUT_SECONDS.getAsInt();
+        draft.panSpeed = ClientConfig.PAN_SPEED.getAsDouble();
+        draft.shotDurationSeconds = ClientConfig.SHOT_DURATION_SECONDS.getAsInt();
+        draft.shotMode = ClientConfig.SHOT_MODE.get();
+        draft.cameraDistance = ClientConfig.CAMERA_DISTANCE.getAsDouble();
+        draft.smoothTransitions = ClientConfig.SMOOTH_TRANSITIONS.getAsBoolean();
+        draft.transitionIntensity = ClientConfig.TRANSITION_INTENSITY.getAsDouble();
+        draft.hideHud = ClientConfig.HIDE_HUD.getAsBoolean();
+        draft.includeEntities = ClientConfig.INCLUDE_ENTITIES.getAsBoolean();
+        draft.debug = ClientConfig.SHOW_DEBUG_PRESET.getAsBoolean();
+        draft.countdownEnabled = ClientConfig.COUNTDOWN_ENABLED.getAsBoolean();
+        draft.countdownSeconds = ClientConfig.COUNTDOWN_SECONDS.getAsInt();
+        draft.exitOnFocusRegain = ClientConfig.EXIT_ON_FOCUS_REGAIN.getAsBoolean();
+        draft.showTimerTitle = ClientConfig.SHOW_TIMER_TITLE.getAsBoolean();
+        draft.showTimer = ClientConfig.SHOW_AFK_TIMER.getAsBoolean();
+        draft.hudScale = ClientConfig.HUD_SCALE.getAsDouble();
+        draft.hudAnchor = ClientConfig.HUD_ANCHOR.get();
+        draft.newMotions = ClientConfig.ENABLE_NEW_MOTIONS.getAsBoolean();
+        draft.playerPool = ClientConfig.PLAYER_POOL_ENABLED.getAsBoolean();
+        draft.landscapePool = ClientConfig.LANDSCAPE_POOL_ENABLED.getAsBoolean();
+        draft.entityPool = ClientConfig.ENTITY_POOL_ENABLED.getAsBoolean();
+        draft.celestialPool = ClientConfig.CELESTIAL_POOL_ENABLED.getAsBoolean();
+        draft.fpsCapEnabled = ClientConfig.FPS_CAP_ENABLED.getAsBoolean();
+        draft.fpsCap = ClientConfig.FPS_CAP.getAsInt();
+        draft.fovEnabled = ClientConfig.CINEMATIC_FOV_ENABLED.getAsBoolean();
+        draft.fov = ClientConfig.CINEMATIC_FOV.getAsInt();
+        draft.audioEnabled = ClientConfig.AUDIO_PROFILE_ENABLED.getAsBoolean();
+        draft.masterVolume = ClientConfig.MASTER_VOLUME.getAsDouble();
+        return draft;
+    }
+
+    public void resetDefaults() {
+        enabled = true; timeoutSeconds = 25; panSpeed = 1.0; shotDurationSeconds = 9;
+        shotMode = ClientConfig.ShotMode.DYNAMIC; cameraDistance = 1.0; smoothTransitions = true;
+        transitionIntensity = 1.0; hideHud = true; includeEntities = true; debug = false;
+        countdownEnabled = true; countdownSeconds = 3; exitOnFocusRegain = true;
+        showTimerTitle = true; showTimer = true; hudScale = 1.0; hudAnchor = ClientConfig.HudAnchor.TOP_RIGHT;
+        newMotions = true; playerPool = true; landscapePool = true; entityPool = true; celestialPool = true;
+        fpsCapEnabled = false; fpsCap = 30; fovEnabled = false; fov = 55;
+        audioEnabled = false; masterVolume = 0.35;
+    }
+
+    public void apply() {
+        validate();
+        ClientConfig.ENABLED.set(enabled); ClientConfig.AFK_TIMEOUT_SECONDS.set(timeoutSeconds);
+        ClientConfig.PAN_SPEED.set(panSpeed); ClientConfig.SHOT_DURATION_SECONDS.set(shotDurationSeconds);
+        ClientConfig.SHOT_MODE.set(shotMode); ClientConfig.CAMERA_DISTANCE.set(cameraDistance);
+        ClientConfig.SMOOTH_TRANSITIONS.set(smoothTransitions); ClientConfig.TRANSITION_INTENSITY.set(transitionIntensity);
+        ClientConfig.HIDE_HUD.set(hideHud); ClientConfig.INCLUDE_ENTITIES.set(includeEntities);
+        ClientConfig.SHOW_DEBUG_PRESET.set(debug); ClientConfig.COUNTDOWN_ENABLED.set(countdownEnabled);
+        ClientConfig.COUNTDOWN_SECONDS.set(countdownSeconds); ClientConfig.EXIT_ON_FOCUS_REGAIN.set(exitOnFocusRegain);
+        ClientConfig.SHOW_TIMER_TITLE.set(showTimerTitle); ClientConfig.SHOW_AFK_TIMER.set(showTimer);
+        ClientConfig.HUD_SCALE.set(hudScale); ClientConfig.HUD_ANCHOR.set(hudAnchor);
+        ClientConfig.ENABLE_NEW_MOTIONS.set(newMotions); ClientConfig.FPS_CAP_ENABLED.set(fpsCapEnabled);
+        ClientConfig.PLAYER_POOL_ENABLED.set(playerPool); ClientConfig.LANDSCAPE_POOL_ENABLED.set(landscapePool);
+        ClientConfig.ENTITY_POOL_ENABLED.set(entityPool); ClientConfig.CELESTIAL_POOL_ENABLED.set(celestialPool);
+        ClientConfig.FPS_CAP.set(fpsCap); ClientConfig.CINEMATIC_FOV_ENABLED.set(fovEnabled);
+        ClientConfig.CINEMATIC_FOV.set(fov); ClientConfig.AUDIO_PROFILE_ENABLED.set(audioEnabled);
+        ClientConfig.MASTER_VOLUME.set(masterVolume); ClientConfig.SPEC.save();
+    }
+
+    private void validate() {
+        timeoutSeconds = clamp(timeoutSeconds, 5, 3600); shotDurationSeconds = clamp(shotDurationSeconds, 5, 30);
+        countdownSeconds = clamp(countdownSeconds, 0, 10); fpsCap = clamp(fpsCap, 10, 260); fov = clamp(fov, 30, 110);
+        panSpeed = clamp(panSpeed, 0.1, 4.0); cameraDistance = clamp(cameraDistance, 0.6, 1.6);
+        transitionIntensity = clamp(transitionIntensity, 0.0, 2.0); hudScale = clamp(hudScale, 0.5, 2.0);
+        masterVolume = clamp(masterVolume, 0.0, 1.0);
+    }
+    private static int clamp(int value, int min, int max) { return Math.max(min, Math.min(max, value)); }
+    private static double clamp(double value, double min, double max) { return Math.max(min, Math.min(max, Double.isFinite(value) ? value : min)); }
+}

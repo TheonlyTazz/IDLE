@@ -1,7 +1,11 @@
 # Idle Cinematics
 
 A client-side cinematic camera for Minecraft 26.1.2 on NeoForge. After 25 seconds without keyboard or
-mouse input, the camera begins collision-aware orbit and drift shots around the local player. Any input exits at once.
+mouse input, the camera begins collision-aware, context-aware shots. Any input exits at once.
+
+Version 1.3 adds a public typed preset API, semantic camera compositions, collision-volume shot planning,
+an explicit countdown/AFK lifecycle, transactional multi-page settings, dedicated HUD layers, and optional
+crash-safe FPS, FOV, and audio profiles.
 
 Inspired by [AFK Cinematics](https://www.curseforge.com/minecraft/mc-mods/afk-cinematics) for Fabric. Idle Cinematics
 is a fresh implementation for NeoForge.
@@ -10,9 +14,10 @@ is a fresh implementation for NeoForge.
 
 - `F8`: enable or disable automatic activation
 - `F9`: start or stop cinematic mode immediately
+- `F10`: open settings (an active cinematic is suspended and resumes when the screen closes)
 
 Client configuration is written by NeoForge to `config/idlecinematics-client.toml`. It includes the AFK timeout,
-pan speed, path mode, transition smoothing, and HUD visibility.
+pan speed, scene pools, transition intensity, overlays, and conservative temporary profiles.
 
 ## Development
 

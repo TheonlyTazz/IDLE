@@ -2,6 +2,9 @@ package dev.theonlytazz.idlecinematics;
 
 import dev.theonlytazz.idlecinematics.config.ClientConfig;
 import dev.theonlytazz.idlecinematics.client.IdleSettingsScreen;
+import dev.theonlytazz.idlecinematics.api.RegisterCinematicPresetsEvent;
+import dev.theonlytazz.idlecinematics.client.profile.TemporaryClientProfile;
+import dev.theonlytazz.idlecinematics.client.shots.ShotRegistry;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -16,5 +19,10 @@ public final class IdleCinematics {
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
         IConfigScreenFactory configScreenFactory = (modContainer, parent) -> new IdleSettingsScreen(parent);
         container.registerExtensionPoint(IConfigScreenFactory.class, configScreenFactory);
+        ShotRegistry registry = ShotRegistry.createBuiltIns();
+        container.acceptEvent(new RegisterCinematicPresetsEvent(registry));
+        registry.freeze();
+        ShotRegistry.install(registry);
+        TemporaryClientProfile.recoverAtStartup();
     }
 }

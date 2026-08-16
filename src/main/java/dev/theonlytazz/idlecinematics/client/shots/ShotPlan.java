@@ -1,16 +1,13 @@
 package dev.theonlytazz.idlecinematics.client.shots;
 
-import dev.theonlytazz.idlecinematics.client.camera.CameraPath;
+import dev.theonlytazz.idlecinematics.api.CameraMotion;
+import dev.theonlytazz.idlecinematics.api.CinematicPreset;
+import dev.theonlytazz.idlecinematics.api.CinematicSubject;
+import dev.theonlytazz.idlecinematics.api.SafetyPolicy;
+import dev.theonlytazz.idlecinematics.api.TransitionSpec;
 
-import net.minecraft.world.phys.Vec3;
-
-public record ShotPlan(String presetId, ShotPool pool, Vec3 cameraAnchor, Vec3 focus, CameraPath path,
-                       int durationTicks, int transitionTicks) {
-    public Vec3 desiredPosition(double progress, double phase, double distanceScale) {
-        Vec3 unscaled = cameraAnchor.add(path.offset(progress, phase));
-        // Scale around the framing target, not the anchor. Landscape and celestial shots
-        // intentionally place their focus away from the player; scaling around the anchor
-        // would shift those shots off-center when the user changes camera distance.
-        return focus.add(unscaled.subtract(focus).scale(distanceScale));
-    }
+public record ShotPlan(CinematicPreset preset, CinematicSubject subject, CameraMotion motion,
+                       int durationTicks, TransitionSpec transition, SafetyPolicy safety) {
+    public String presetId() { return preset.id().toString(); }
+    public String pool() { return preset.pool(); }
 }
