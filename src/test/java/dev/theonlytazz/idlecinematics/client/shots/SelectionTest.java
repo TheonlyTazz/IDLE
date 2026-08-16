@@ -47,6 +47,17 @@ final class SelectionTest {
                 CinematicContext.DayPhase.NIGHT, CinematicContext.Weather.CLEAR, true, 4, Optional.empty());
         CinematicPreset wide = registry.require(new NamespacedId("idlecinematics", "wide_orbit"));
         assertEquals(0, wide.contextScore(shortView));
+        CinematicContext nether = TestContexts.context(false, CinematicContext.DimensionKind.NETHER,
+                CinematicContext.DayPhase.DAY, CinematicContext.Weather.CLEAR, false, 12, Optional.empty());
+        CinematicContext end = TestContexts.context(false, CinematicContext.DimensionKind.END,
+                CinematicContext.DayPhase.NIGHT, CinematicContext.Weather.CLEAR, true, 12, Optional.empty());
+        assertTrue(registry.require(new NamespacedId("idlecinematics", "nether_ridge")).contextScore(nether) > 0);
+        assertEquals(0, registry.require(new NamespacedId("idlecinematics", "nether_ridge")).contextScore(end));
+        assertTrue(registry.require(new NamespacedId("idlecinematics", "end_spire")).contextScore(end) > 0);
+        assertTrue(registry.require(new NamespacedId("idlecinematics", "day_high_sky")).contextScore(clear) > 0);
+        CinematicContext cave = TestContexts.context(true, CinematicContext.DimensionKind.OVERWORLD,
+                CinematicContext.DayPhase.DAY, CinematicContext.Weather.CLEAR, false, 12, Optional.empty());
+        assertTrue(registry.require(new NamespacedId("idlecinematics", "cave_close_portrait")).contextScore(cave) > 0);
     }
 
     @Test void registryRejectsDuplicatesAndBecomesImmutable() {
