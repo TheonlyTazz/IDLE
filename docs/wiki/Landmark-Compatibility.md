@@ -5,6 +5,8 @@ multiblock controllers. A landmark definition identifies a block entity and desc
 focus offset, selection weight, and semantic tags. IDLE supplies the camera motion, transitions, collision checks,
 and safe fallback.
 
+Pack authors who do not want to compile an addon can use the complete [KubeJS Integration](KubeJS-Integration.md).
+
 ## Runtime behavior
 
 - Discovery runs only when IDLE selects a new shot.
