@@ -2,7 +2,7 @@
 
 ## API version
 
-IDLE 1.3 exposes API version 1:
+IDLE 1.1 exposes API version 1:
 
 ```java
 if (CinematicPresets.API_VERSION != 1) {

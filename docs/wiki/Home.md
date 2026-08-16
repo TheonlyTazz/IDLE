@@ -1,6 +1,6 @@
 # IDLE Wiki
 
-IDLE 1.3 exposes a versioned Java API for adding cinematic scenes without mixins, camera mutation, or JSON files.
+IDLE 1.1 exposes a versioned Java API for adding cinematic scenes without mixins, camera mutation, or JSON files.
 An add-on supplies semantic camera compositions; IDLE remains responsible for selection, damping, interpolation,
 collision, subject retention, detached-camera rendering, and immediate cleanup.
 
