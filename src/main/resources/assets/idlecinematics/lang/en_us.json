@@ -47,5 +47,8 @@
   "idlecinematics.settings.audio_profile": "Audio profile",
   "idlecinematics.settings.volume": "Master volume",
   "idlecinematics.settings.reset": "Reset",
-  "idlecinematics.settings.apply": "Apply"
+  "idlecinematics.settings.apply": "Apply",
+  "idlecinematics.settings.page_header": "%1$s Settings (%2$s/%3$s)",
+  "idlecinematics.settings.previous": "<< Prev",
+  "idlecinematics.settings.next": "Next >>"
 }

@@ -27,15 +27,9 @@ public final class IdleSettingsScreen extends Screen {
     }
 
     @Override protected void init() {
-        int tabWidth = Math.min(76, (width - 20) / Page.values().length);
-        int tabLeft = (width - tabWidth * Page.values().length) / 2;
-        for (Page value : Page.values()) {
-            addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.page." + value.name().toLowerCase(Locale.ROOT)),
-                    button -> switchPage(value)).bounds(tabLeft + value.ordinal() * tabWidth, 28, tabWidth - 2, 20).build());
-        }
         int left = width / 2 - 155;
         int right = width / 2 + 5;
-        int y = 62;
+        int y = 50;
         switch (page) {
             case GENERAL -> {
                 toggle(left, y, "enabled", draft.enabled, value -> draft.enabled = value);
@@ -79,14 +73,27 @@ public final class IdleSettingsScreen extends Screen {
                 slider(right, y + 48, "volume", draft.masterVolume * 100, 0, 100, 5, value -> draft.masterVolume = value / 100, "%");
             }
         }
-        int bottom = Math.min(height - 28, 158);
+        int navigationY = Math.min(height - 52, 146);
+        Button previous = Button.builder(Component.translatable("idlecinematics.settings.previous"), button -> changePage(-1))
+                .bounds(width / 2 - 155, navigationY, 96, 20).build();
+        previous.active = page.ordinal() > 0;
+        addRenderableWidget(previous);
+        Button next = Button.builder(Component.translatable("idlecinematics.settings.next"), button -> changePage(1))
+                .bounds(width / 2 + 59, navigationY, 96, 20).build();
+        next.active = page.ordinal() < Page.values().length - 1;
+        addRenderableWidget(next);
+
+        int actionsY = navigationY + 24;
         addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset"), button -> { draft.resetDefaults(); rebuild(); })
-                .bounds(width / 2 - 155, bottom, 96, 20).build());
-        addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> closeCanceled()).bounds(width / 2 - 49, bottom, 96, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.apply"), button -> applyAndClose()).bounds(width / 2 + 57, bottom, 96, 20).build());
+                .bounds(width / 2 - 155, actionsY, 96, 20).build());
+        addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> closeCanceled()).bounds(width / 2 - 49, actionsY, 96, 20).build());
+        addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.apply"), button -> applyAndClose()).bounds(width / 2 + 57, actionsY, 96, 20).build());
     }
 
-    private void switchPage(Page selected) { if (page != selected) { page = selected; rebuild(); } }
+    private void changePage(int direction) {
+        int selected = Math.max(0, Math.min(Page.values().length - 1, page.ordinal() + direction));
+        if (selected != page.ordinal()) { page = Page.values()[selected]; rebuild(); }
+    }
     private void rebuild() { clearWidgets(); init(); }
     private void toggle(int x, int y, String key, boolean initial, java.util.function.Consumer<Boolean> setter) {
         addRenderableWidget(CycleButton.onOffBuilder(initial).create(x, y, 150, 20, label(key), (button, value) -> setter.accept(value)));
@@ -101,8 +108,14 @@ public final class IdleSettingsScreen extends Screen {
     @Override public void onClose() { if (!applied) closeCanceled(); }
 
     @Override public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.centeredText(font, title, width / 2, 10, 0xFFFFFFFF);
+        graphics.centeredText(font, pageTitle(), width / 2, 18, 0xFFFFFFFF);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
+    private Component pageTitle() {
+        return Component.translatable("idlecinematics.settings.page_header",
+                Component.translatable("idlecinematics.settings.page." + page.name().toLowerCase(Locale.ROOT)),
+                page.ordinal() + 1, Page.values().length);
     }
 
     private static final class ValueSlider extends AbstractSliderButton {
