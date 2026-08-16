@@ -19,6 +19,8 @@ is a fresh implementation for NeoForge.
 Client configuration is written by NeoForge to `config/idlecinematics-client.toml`. It includes the AFK timeout,
 pan speed, scene pools, transition intensity, overlays, and conservative temporary profiles.
 
+Add-on authors can start with the [IDLE Add-on Developer Wiki](docs/wiki/Home.md).
+
 ## Development
 
 Minecraft 1.21.1 requires Java 21. Run `./gradlew build` (or `gradlew.bat build` on Windows). The distributable JAR

@@ -97,7 +97,7 @@ public final class CinematicController {
         previousPose = currentPose;
         if (shotTick >= plan.durationTicks()) chooseShot(minecraft);
         double progress = Math.min(1.0, shotTick / (double) Math.max(1, plan.durationTicks()));
-        CinematicRigState desired = plan.motion().sample(progress, shotTick * TICK_SECONDS);
+        CinematicRigState desired = constrain(plan.motion().sample(progress, shotTick * TICK_SECONDS), plan.safety());
         if (liveSubject != null && (plan.subject().type() == CinematicSubject.Type.PLAYER || plan.subject().type() == CinematicSubject.Type.ENTITY)) {
             desired = translateForLiveSubject(desired, plan.subject(), liveSubject);
         }
@@ -146,7 +146,7 @@ public final class CinematicController {
 
     private boolean validPlan(Minecraft minecraft, ShotPlan candidate) {
         for (double sample : new double[]{0.0, 0.5, 1.0}) {
-            CinematicRigState rig = candidate.motion().sample(sample, sample * candidate.durationTicks() * TICK_SECONDS);
+            CinematicRigState rig = constrain(candidate.motion().sample(sample, sample * candidate.durationTicks() * TICK_SECONDS), candidate.safety());
             Vec3 position = rig.resolvePosition(ClientConfig.CAMERA_DISTANCE.getAsDouble());
             CameraVolumeCollision.Result result = collision(minecraft, rig.focus(), position, candidate.safety().collisionRadius());
             if (result.distance() < candidate.safety().minimumDistance()) return false;
@@ -203,6 +203,13 @@ public final class CinematicController {
 
     private static CinematicRigState withAzimuth(CinematicRigState state, double azimuth) {
         return new CinematicRigState(state.anchor(), state.focus(), state.distance(), azimuth, state.elevation(),
+                state.lateralOffset(), state.verticalOffset(), state.roll(), state.cinematicFov(), state.subject(), state.yawMode());
+    }
+
+    private static CinematicRigState constrain(CinematicRigState state, dev.theonlytazz.idlecinematics.api.SafetyPolicy safety) {
+        double distance = Math.max(safety.minimumDistance(), Math.min(safety.maximumDistance(), state.distance()));
+        double elevation = Math.max(safety.minimumPitch(), Math.min(safety.maximumPitch(), state.elevation()));
+        return new CinematicRigState(state.anchor(), state.focus(), distance, state.azimuth(), elevation,
                 state.lateralOffset(), state.verticalOffset(), state.roll(), state.cinematicFov(), state.subject(), state.yawMode());
     }
 
