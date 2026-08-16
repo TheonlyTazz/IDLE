@@ -75,8 +75,11 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
                 slider(right, y + 48, "volume", draft.masterVolume * 100, 0, 100, 5, value -> draft.masterVolume = value / 100, "%");
             }
         }
+        int footerY = height - 28;
+        addRenderableWidget(Button.builder(Component.translatable("idlecinematics.settings.reset_section"), button -> resetSection())
+                .bounds(width / 2 - 155, footerY, 150, 20).build());
         addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> onClose())
-                .bounds(width / 2 - 100, height - 28, 200, 20).build());
+                .bounds(width / 2 + 5, footerY, 150, 20).build());
     }
 
     private void toggle(int x, int y, String key, boolean initial, java.util.function.Consumer<Boolean> setter) {
@@ -88,6 +91,18 @@ final class IdleSettingsSectionScreen extends Screen implements IdleSettingsView
     }
 
     private static Component label(String key) { return Component.translatable("idlecinematics.settings." + key); }
+
+    private void resetSection() {
+        switch (section) {
+            case GENERAL -> draft.resetGeneralDefaults();
+            case CAMERA -> draft.resetCameraDefaults();
+            case SCENES -> draft.resetSceneDefaults();
+            case HUD -> draft.resetHudDefaults();
+            case DEBUG -> draft.resetDebugDefaults();
+            case PROFILES -> draft.resetProfileDefaults();
+        }
+        rebuildWidgets();
+    }
 
     @Override public void onClose() { minecraft.setScreen(parent); }
 
